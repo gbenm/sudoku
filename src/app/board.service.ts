@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {Board, ReadonlyBoard} from './board';
-import {ReadonlyCell} from './cell';
 import {HelperService} from './helper.service';
 
 @Injectable({
@@ -20,7 +19,8 @@ export class BoardService {
   private init(num: number) {
     console.log(`generate`);
     Board.setHelper(this.helper);
-    this.current = Board.generateSolution();
+    this.current = new Board();
+    this.current.generateSolution();
     this.history = [];
     this.board = new BehaviorSubject<ReadonlyBoard>(this.current);
   }

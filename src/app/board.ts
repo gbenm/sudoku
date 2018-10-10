@@ -37,14 +37,14 @@ export class Board implements ReadonlyBoard {
       this._selected = cell;
       this._highlighted.add(cell);
       if (cell.num > 0) {
-        this.cells.forEach((c, k, m) => {
+        this.cells.forEach((c) => {
           if (c.num === cell.num) {
             this._highlighted.add(c);
           }
         });
       }
       const ll = new Set<Cell>();
-      this._highlighted.forEach((c, k, s) => this.iterateOverRelatedCells(c, (fc) => {
+      this._highlighted.forEach((c) => this.iterateOverRelatedCells(c, (fc) => {
         ll.add(fc);
         return true;
       }));
@@ -63,54 +63,51 @@ export class Board implements ReadonlyBoard {
     return boardSize;
   }
 
-  static generateSolutionRecursive(board: Board, remainingKeys: Array<string>): Board {
+  generateSolutionRecursive(remainingKeys: Array<string>) {
     if (remainingKeys.length > 0) {
       // const remainingKeys = Array.from(keys);
-      remainingKeys.sort((k1, k2) => board.get(k1).compare(board.get(k2)));
+      remainingKeys.sort((k1, k2) => this.get(k1).compare(this.get(k2)));
       const key = remainingKeys.shift();
+      const cell = this.get(key);
       // console.log(`k ${remainingKeys}`);
       // const [i, j] = board.genIndex(key);
-      const hints = board.get(key).hints;
-      const numbers = Array.from(hints);
-      this.helper.shuffle(numbers);
+      const numbers = Array.from(this.get(key).hints);
+      Board.helper.shuffle(numbers);
       console.log(`[${remainingKeys.length}] k ${key} hints ${numbers}`);
       while (numbers.length) {
         const num = numbers.shift();
         // let newBoard = new Board(board);
-        board.setNumber(board.get(key), num);
-        board = Board.generateSolutionRecursive(board, remainingKeys);
-        console.log(`${board.valid} [${remainingKeys.length}] ${key} => ${num} hints [${numbers}]`);
-        if (board.valid) {
-          return board;
+        this.setNumber(cell, num);
+        this.generateSolutionRecursive(remainingKeys);
+        console.log(`${this.valid} [${remainingKeys.length}] ${key} => ${num} hints [${numbers}]`);
+        if (this.valid) {
+          return;
         }
-        board.unsetNumber(board.get(key));
+        this.unsetNumber(cell);
       }
       remainingKeys.unshift(key);
     }
-    board.valid = remainingKeys.length === 0;
-    return board;
+    this.valid = remainingKeys.length === 0;
   }
 
-  static prepareBoard(board: Board) {
-    const cells = Array.from(board.cells.values());
-    this.helper.shuffle(cells);
+  prepareBoardForGameplay() {
+    const cells = Array.from(this.cells.values());
+    Board.helper.shuffle(cells);
     for (let i = 0; i < 50; i++) {
       const c = cells.shift();
-      board.unsetNumber(c);
+      this.unsetNumber(c);
       c.modifiable = true;
     }
   }
 
-  static generateSolution(): Board {
-    let board = new Board();
-    board.initializeHints();
-    const keys = Array.from(board.cells.keys());
-    this.helper.shuffle(keys);
+  generateSolution() {
+    this.initializeHints();
+    const keys = Array.from(this.cells.keys());
+    Board.helper.shuffle(keys);
     // assign a random value to cell.k to randomly select rowHints with same hint size
-    keys.forEach((key, i, a) => board.get(key).k = i);
-    board = Board.generateSolutionRecursive(board, keys);
-    Board.prepareBoard(board);
-    return board;
+    keys.forEach((key, i) => this.get(key).k = i);
+    this.generateSolutionRecursive(keys);
+    this.prepareBoardForGameplay();
   }
 
   static setHelper(helper: HelperService) {
@@ -190,7 +187,7 @@ export class Board implements ReadonlyBoard {
     for (let i = 1; i <= boardSize; i++) {
       h[i - 1] = i;
     }
-    this.cells.forEach((v, k, map) => v.hints = new Set<number>(h));
+    this.cells.forEach((c) => c.hints = new Set<number>(h));
   }
 
   private deepCopy(board: Board) {
