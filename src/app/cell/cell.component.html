@@ -1,0 +1,19 @@
+<div class="cell" [ngClass]="{'selected' : selected, 'highlighted': highlighted}">
+  <!--({{cell.i}},{{cell.j}}) <br>-->
+  <ng-template [ngIf]="cell.num > 0" [ngIfElse]="showInts">
+    <div class="cell-number" [class.invalid]="invalid" [class.modifiable]="modifiable">{{number}}</div>
+  </ng-template>
+
+  <ng-template #showInts>
+    <table class="cell-hints">
+      <tbody>
+      <tr *ngFor="let r of rowsIndex()">
+        <td *ngFor="let hint of rowHints(r)">
+          <span *ngIf="hint; else nbsp">{{hint}}</span>
+          <ng-template #nbsp>&nbsp; &nbsp;</ng-template>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </ng-template>
+</div>

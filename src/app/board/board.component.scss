@@ -1,0 +1,51 @@
+
+.board {
+  border-collapse: collapse;
+}
+
+.board td {
+  border: solid thin;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+
+  &.board-top-left {
+    border-top: solid medium;
+    border-left: solid medium;
+  }
+
+  &.board-top-middle {
+    border-top: solid medium;
+  }
+
+  &.board-top-right {
+    border-top: solid medium;
+    border-right: solid medium;
+  }
+
+  &.board-center-left {
+    border-left: solid medium;
+  }
+
+  &.board-center-middle {
+  }
+
+  &.board-center-right {
+    border-right: solid medium;
+  }
+
+  &.board-bottom-left {
+    border-bottom: solid medium;
+    border-left: solid medium;
+  }
+
+  &.board-bottom-middle {
+    border-bottom: solid medium;
+  }
+
+  &.board-bottom-right {
+    border-bottom: solid medium;
+    border-right: solid medium;
+  }
+
+}

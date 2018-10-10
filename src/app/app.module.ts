@@ -1,16 +1,39 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NgModule} from '@angular/core';
 
-import { AppComponent } from './app.component';
+import {AppComponent} from './app.component';
+import {BoardComponent} from './board/board.component';
+import {CellComponent} from './cell/cell.component';
+import {NavigationComponent} from './navigation/navigation.component';
+import {LayoutModule} from '@angular/cdk/layout';
+import {
+  MatToolbarModule,
+  MatButtonModule,
+  MatSidenavModule,
+  MatIconModule,
+  MatListModule,
+  MatTableModule,
+  MatGridListModule, MatCardModule
+} from '@angular/material';
+import { NumberButtonbarComponent } from './number-buttonbar/number-buttonbar.component';
+import { HintButtonbarComponent } from './hint-buttonbar/hint-buttonbar.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    BoardComponent,
+    CellComponent,
+    NavigationComponent,
+    NumberButtonbarComponent,
+    HintButtonbarComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule, BrowserAnimationsModule, LayoutModule,
+    MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule, MatTableModule, MatGridListModule, MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

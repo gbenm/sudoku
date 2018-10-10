@@ -1,0 +1,6 @@
+<mat-card>
+  <ng-container *ngFor="let b of buttons">
+    <button mat-mini-fab color="primary" [disabled]="disabled" (click)="setNumber(b)">{{b}}</button>
+  </ng-container>
+  <button mat-icon-button (click)="unsetNumber()" [disabled]="unsetNumberDisabled" ><mat-icon>delete</mat-icon></button>
+</mat-card>

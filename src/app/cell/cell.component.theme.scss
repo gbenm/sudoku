@@ -1,0 +1,35 @@
+@import '~@angular/material/theming';
+
+@mixin cell-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+
+  .selected {
+    background-color: mat-color($mat-blue-gray, 200);
+  }
+
+  .highlighted {
+    background-color: mat-color($mat-grey, 200);
+  }
+
+  .invalid {
+    color: mat-color($warn) !important;
+  }
+
+  .modifiable {
+    color: mat-color($mat-blue, 900);
+  }
+
+  .cell-number {
+    @extend .mat-title;
+    margin: 0;
+  }
+
+  .cell-hints {
+    @extend .mat-caption;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+  }
+}
