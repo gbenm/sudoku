@@ -63,31 +63,34 @@ export class Board implements ReadonlyBoard {
     return boardSize;
   }
 
-  generateSolutionRecursive(remainingKeys: Array<string>) {
-    if (remainingKeys.length > 0) {
-      // const remainingKeys = Array.from(keys);
-      remainingKeys.sort((k1, k2) => this.get(k1).compare(this.get(k2)));
-      const key = remainingKeys.shift();
+  static setHelper(helper: HelperService) {
+    Board.helper = helper;
+  }
+
+  generateSolutionRecursive(keys: Array<string>) {
+    if (keys.length > 0) {
+      // const keys = Array.from(keys);
+      keys.sort((k1, k2) => this.get(k1).compare(this.get(k2)));
+      const key = keys.shift();
       const cell = this.get(key);
-      // console.log(`k ${remainingKeys}`);
+      // console.log(`k ${keys}`);
       // const [i, j] = board.genIndex(key);
       const numbers = Array.from(this.get(key).hints);
       Board.helper.shuffle(numbers);
-      console.log(`[${remainingKeys.length}] k ${key} hints ${numbers}`);
+      console.log(`[${keys.length}] k ${key} hints ${numbers}`);
       while (numbers.length) {
         const num = numbers.shift();
-        // let newBoard = new Board(board);
         this.setNumber(cell, num);
-        this.generateSolutionRecursive(remainingKeys);
-        console.log(`${this.valid} [${remainingKeys.length}] ${key} => ${num} hints [${numbers}]`);
+        this.generateSolutionRecursive(keys);
+        console.log(`${this.valid} [${keys.length}] ${key} => ${num} hints [${numbers}]`);
         if (this.valid) {
           return;
         }
         this.unsetNumber(cell);
       }
-      remainingKeys.unshift(key);
+      keys.unshift(key);
     }
-    this.valid = remainingKeys.length === 0;
+    this.valid = keys.length === 0;
   }
 
   prepareBoardForGameplay() {
@@ -108,10 +111,6 @@ export class Board implements ReadonlyBoard {
     keys.forEach((key, i) => this.get(key).k = i);
     this.generateSolutionRecursive(keys);
     this.prepareBoardForGameplay();
-  }
-
-  static setHelper(helper: HelperService) {
-    Board.helper = helper;
   }
 
   setNumber(cell: Cell, num: number) {
@@ -137,13 +136,13 @@ export class Board implements ReadonlyBoard {
     cell.hints.add(num);
   }
 
-  private get(key: string): Cell {
-    return this.cells.get(key);
-  }
-
   getCell(i: number, j: number): Cell {
     const k = this.genKey(i, j);
     return this.cells.get(k);
+  }
+
+  private get(key: string): Cell {
+    return this.cells.get(key);
   }
 
   private isMoveCorrect(cell: Cell, num: number): boolean {
