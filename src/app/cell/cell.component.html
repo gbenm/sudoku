@@ -1,5 +1,5 @@
-<div class="cell" [ngClass]="{'selected' : selected, 'highlighted': highlighted}">
-  <!--({{cell.i}},{{cell.j}}) <br>-->
+<div class="cell" [ngClass]="{'selected' : selected, 'highlighted': highlighted, 'same-number': sameNumber}" (click)="selectCell(cell)">
+
   <ng-template [ngIf]="cell.num > 0" [ngIfElse]="showInts">
     <div class="cell-number" [class.invalid]="invalid" [class.modifiable]="modifiable">{{number}}</div>
   </ng-template>
@@ -16,4 +16,5 @@
       </tbody>
     </table>
   </ng-template>
+
 </div>

@@ -1,4 +1,4 @@
-import {Cell, ReadonlyCell} from './cell';
+import {Cell, emptyCell, ReadonlyCell} from './cell';
 import {HelperService} from './helper.service';
 
 const squareSize = 3;
@@ -45,11 +45,12 @@ export class Board implements ReadonlyBoard {
       console.log(`[${keys.length}] k ${key} hints ${numbers}`);
       while (numbers.length) {
         const num = numbers.shift();
-        this.setNumber(cell, num);
-        this.generateSolutionRecursive(keys);
-        console.log(`${this.valid} [${keys.length}] ${key} => ${num} hints [${numbers}]`);
-        if (this.valid) {
-          return;
+        if (this.setNumber(cell, num)) {
+          this.generateSolutionRecursive(keys);
+          console.log(`${this.valid} [${keys.length}] ${key} => ${num} hints [${numbers}]`);
+          if (this.valid) {
+            return;
+          }
         }
         this.unsetNumber(cell);
       }
@@ -70,7 +71,13 @@ export class Board implements ReadonlyBoard {
 
   generateSolution() {
     this.initializeHints();
-    const keys = Array.from(this.cells.keys());
+    const keys = new Array<string>();
+    this.cells.forEach((c) => {
+      if (c.isEmpty()) {
+        keys.push(c.key);
+      }
+    });
+    // const keys = Array.from(this.cells.keys());
     Board.helper.shuffle(keys);
     // assign a random value to cell.k to randomly select rowHints with same hint size
     keys.forEach((key, i) => this.get(key).k = i);
@@ -86,11 +93,12 @@ export class Board implements ReadonlyBoard {
     this.unsetNumber(cell as Cell);
   }
 
-  private setNumber(cell: Cell, num: number) {
-    console.log(`set (${cell.i}, ${cell.j}) => ${num}`);
+  private setNumber(cell: Cell, num: number): boolean {
+    console.log(`set ${cell} => ${num}`);
     cell.valid = this.isMoveCorrect(cell, num);
     cell.num = num;
     this.updateHints(cell, num);
+    return cell.valid;
   }
 
   // genIndex(key: string): Array<number> {
@@ -98,9 +106,9 @@ export class Board implements ReadonlyBoard {
   // }
 
   unsetNumber(cell: Cell) {
-    console.log(`unset (${cell.i}, ${cell.j}) <= ${cell.num}`);
+    console.log(`unset ${cell}`);
     const num = cell.num;
-    cell.num = -1;
+    cell.num = emptyCell;
     cell.valid = false;
     this.updateHintsAfterUnset(cell, num);
   }

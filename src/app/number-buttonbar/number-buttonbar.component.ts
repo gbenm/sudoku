@@ -1,8 +1,9 @@
 ///<reference path="../board.service.ts"/>
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {BoardService} from '../board.service';
 import {Board, ReadonlyBoard} from '../board';
 import {HelperService} from '../helper.service';
+import {ReadonlyCell} from '../cell';
 
 // TODO disable button when its number is all set
 
@@ -13,27 +14,31 @@ import {HelperService} from '../helper.service';
 })
 export class NumberButtonbarComponent implements OnInit {
 
-  board: ReadonlyBoard;
-
   constructor(private boardService: BoardService, private helper: HelperService) {
   }
 
   ngOnInit() {
-    this.boardService.getBoard().subscribe((board) => {
-      this.board = board;
-    });
   }
 
-  get buttons(): Array<number> {
-    return this.helper.progr(this.board.size, 1);
+  buttons(): Array<number> {
+    console.log(`buttons`);
+    return this.helper.progr(this.boardService.boardSize, 1);
   }
 
-  get disabled(): boolean {
-    return !this.boardService.selected || !this.boardService.selected.modifiable;
+  disabled(num: number): boolean {
+    return !this.boardService.selected || !this.boardService.selected.modifiable || !this.numbersAvailable(num);
   }
 
-  get unsetNumberDisabled(): boolean {
-    return !this.boardService.selected || this.boardService.selected.num === -1 || !this.boardService.selected.modifiable;
+  unsetNumberDisabled(): boolean {
+    return !this.boardService.selected || this.boardService.selected.isEmpty() || !this.boardService.selected.modifiable;
+  }
+
+  numbers(num: number): number {
+    return this.boardService.numbers.get(num).size;
+  }
+
+  numbersAvailable(num: number): boolean {
+    return this.numbers(num) < this.boardService.boardSize;
   }
 
   setNumber(num: number) {

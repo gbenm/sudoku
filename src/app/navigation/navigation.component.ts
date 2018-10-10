@@ -35,4 +35,8 @@ export class NavigationComponent {
     return this.boardService.isUndoAvailable();
   }
 
+  verify() {
+    this.boardService.verify();
+  }
+
 }

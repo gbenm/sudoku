@@ -5,11 +5,11 @@
   $accent: map-get($theme, accent);
 
   .selected {
-    background-color: mat-color($mat-blue-gray, 200);
+    background-color: mat-color($accent, 400);
   }
 
   .highlighted {
-    background-color: mat-color($mat-grey, 200);
+    background-color: mat-color($mat-grey, 300);
   }
 
   .invalid {
@@ -18,6 +18,10 @@
 
   .modifiable {
     color: mat-color($mat-blue, 900);
+  }
+
+  .same-number {
+    background-color: mat-color($accent, 200);
   }
 
   .cell-number {

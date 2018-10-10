@@ -14,10 +14,10 @@ import {
   MatIconModule,
   MatListModule,
   MatTableModule,
-  MatGridListModule, MatCardModule
+  MatGridListModule, MatCardModule, MatBadgeModule
 } from '@angular/material';
-import { NumberButtonbarComponent } from './number-buttonbar/number-buttonbar.component';
-import { HintButtonbarComponent } from './hint-buttonbar/hint-buttonbar.component';
+import {NumberButtonbarComponent} from './number-buttonbar/number-buttonbar.component';
+import {HintButtonbarComponent} from './hint-buttonbar/hint-buttonbar.component';
 
 @NgModule({
   declarations: [
@@ -29,8 +29,8 @@ import { HintButtonbarComponent } from './hint-buttonbar/hint-buttonbar.componen
     HintButtonbarComponent
   ],
   imports: [
-    BrowserModule, BrowserAnimationsModule, LayoutModule,
-    MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule, MatTableModule, MatGridListModule, MatCardModule
+    BrowserModule, BrowserAnimationsModule, LayoutModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule,
+    MatListModule, MatTableModule, MatGridListModule, MatCardModule, MatBadgeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

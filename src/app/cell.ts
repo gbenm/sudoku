@@ -1,3 +1,5 @@
+export const emptyCell = 0;
+
 export interface ReadonlyCell {
 
   readonly num: number;
@@ -7,13 +9,14 @@ export interface ReadonlyCell {
   readonly valid: boolean;
   readonly modifiable: boolean;
   readonly key: string;
+  isEmpty(): boolean;
 }
 
 export class Cell implements ReadonlyCell {
   k: number;
 
-  constructor(public readonly key: string, public readonly i: number, public readonly j: number, public num: number = -1, public valid: boolean = false,
-              public modifiable: boolean = false, public hints: Set<number> = new Set<number>()) {
+  constructor(public readonly key: string, public readonly i: number, public readonly j: number, public num: number = emptyCell,
+              public valid: boolean = false, public modifiable: boolean = false, public hints: Set<number> = new Set<number>()) {
   }
 
   compare(other: Cell): number {
@@ -30,5 +33,9 @@ export class Cell implements ReadonlyCell {
 
   toString() {
     return `(${this.i},${this.j} ${this.num} ${this.valid ? 'V' : 'X'})`;
+  }
+
+  isEmpty(): boolean {
+    return this.num === emptyCell;
   }
 }

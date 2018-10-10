@@ -43,7 +43,12 @@ export class CellComponent implements OnInit {
   }
 
   get highlighted(): boolean {
-    return this.boardService.highlighted.has(this.cell);
+    return this.boardService.highlighted.has(this.cell) && !this.sameNumber;
+  }
+
+  get sameNumber(): boolean {
+    return this.boardService.selected && !this.boardService.selected.isEmpty() && this.cell !== this.boardService.selected &&
+      this.cell.num === this.boardService.selected.num;
   }
 
   get number(): number {
@@ -57,6 +62,10 @@ export class CellComponent implements OnInit {
 
   rowHints(i: number): Array<number> {
     return this.hints.slice(i * 3, i * 3 + 3);
+  }
+
+  selectCell(cell: ReadonlyCell) {
+    this.boardService.selected = cell;
   }
 
 }
