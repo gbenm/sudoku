@@ -26,6 +26,20 @@
       <span>sudoku</span>
     </mat-toolbar>
     <!-- Add Content Here -->
+    <mat-toolbar>
+      <mat-toolbar-row>
+        <button mat-icon-button (click)="new()">
+          <mat-icon aria-label="New Game">playlist_play</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="!isUndoAvailable()" (click)="replay()">
+          <mat-icon aria-label="Replay game">replay</mat-icon>
+        </button>
+        <span class="filler"></span>
+          <button mat-icon-button [disabled]="!isUndoAvailable()" (click)="undoLastMove()">
+            <mat-icon aria-label="Undo last move">undo</mat-icon>
+          </button>
+      </mat-toolbar-row>
+    </mat-toolbar>
     <app-board></app-board>
     <app-number-buttonbar></app-number-buttonbar>
     <app-hint-buttonbar></app-hint-buttonbar>

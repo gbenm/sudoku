@@ -7,9 +7,10 @@ const boardSize = squareSize * 3;
 export interface ReadonlyBoard {
 
   readonly valid: boolean;
-  selected: ReadonlyCell;
-  readonly highlighted: Set<ReadonlyCell>;
+  // selected: ReadonlyCell;
+  // readonly highlighted: Set<ReadonlyCell>;
   readonly size: number;
+
   getCell(i: number, j: number): ReadonlyCell;
 }
 
@@ -21,42 +22,6 @@ export class Board implements ReadonlyBoard {
 
   constructor(board?: Board) {
     this.deepCopy(board);
-  }
-
-  _selected: Cell;
-
-  get selected(): Cell {
-    return this._selected;
-  }
-
-  set selected(cell: Cell) {
-    this._highlighted.clear();
-    if (!cell || cell === this._selected) {
-      this._selected = null;
-    } else {
-      this._selected = cell;
-      this._highlighted.add(cell);
-      if (cell.num > 0) {
-        this.cells.forEach((c) => {
-          if (c.num === cell.num) {
-            this._highlighted.add(c);
-          }
-        });
-      }
-      const ll = new Set<Cell>();
-      this._highlighted.forEach((c) => this.iterateOverRelatedCells(c, (fc) => {
-        ll.add(fc);
-        return true;
-      }));
-      ll.forEach((c) => this._highlighted.add(c));
-      this._highlighted.delete(cell);
-    }
-  }
-
-  _highlighted: Set<Cell>;
-
-  get highlighted(): Set<Cell> {
-    return this._highlighted;
   }
 
   get size(): number {
@@ -113,7 +78,15 @@ export class Board implements ReadonlyBoard {
     this.prepareBoardForGameplay();
   }
 
-  setNumber(cell: Cell, num: number) {
+  setNum(cell: ReadonlyCell, num: number) {
+    this.setNumber(cell as Cell, num);
+  }
+
+  unsetNum(cell: ReadonlyCell) {
+    this.unsetNumber(cell as Cell);
+  }
+
+  private setNumber(cell: Cell, num: number) {
     console.log(`set (${cell.i}, ${cell.j}) => ${num}`);
     cell.valid = this.isMoveCorrect(cell, num);
     cell.num = num;
@@ -132,7 +105,8 @@ export class Board implements ReadonlyBoard {
     this.updateHintsAfterUnset(cell, num);
   }
 
-  setHint(cell: Cell, num: number) {
+  setHint(cell: ReadonlyCell, num: number) {
+    // FIXME
     cell.hints.add(num);
   }
 
@@ -145,40 +119,27 @@ export class Board implements ReadonlyBoard {
     return this.cells.get(key);
   }
 
-  private isMoveCorrect(cell: Cell, num: number): boolean {
-    return this.iterateOverRelatedCells(cell, (c) => {
-      if (c.i !== cell.i && c.j === cell.j && c.num === num) {
+  private isMoveCorrect(cell: ReadonlyCell, num: number): boolean {
+    for (let i = 0; i < boardSize; i++) {
+      if (i !== cell.i && this.getCell(i, cell.j).num === num) {
         return false;
       }
-      if (c.j !== cell.j && c.i === cell.i && c.num === num) {
+    }
+    for (let j = 0; j < boardSize; j++) {
+      if (j !== cell.j && this.getCell(cell.i, j).num === num) {
         return false;
       }
-      if (c.i !== cell.i && c.j !== cell.j && c.num === num) {
-        return false;
+    }
+    const si = Math.floor(cell.i / squareSize) * squareSize;
+    const sj = Math.floor(cell.j / squareSize) * squareSize;
+    for (let i = si; i < si + squareSize; i++) {
+      for (let j = sj; j < sj + squareSize; j++) {
+        if (i !== cell.i && j !== cell.j && this.getCell(i, j).num === num) {
+          return false;
+        }
       }
-      return true;
-    });
-
-    // for (let qi = 0; qi < boardSize; qi++) {
-    //   if (qi !== i && this.getCell(qi, j).num === num) {
-    //     return false;
-    //   }
-    // }
-    // for (let qj = 0; qj < boardSize; qj++) {
-    //   if (qj !== j && this.getCell(i, qj).num === num) {
-    //     return false;
-    //   }
-    // }
-    // const si = Math.floor(i / squareSize) * squareSize;
-    // const sj = Math.floor(j / squareSize) * squareSize;
-    // for (let qi = si; qi < si + squareSize; qi++) {
-    //   for (let qj = sj; qj < sj + squareSize; qj++) {
-    //     if (qi !== i && qj !== j && this.getCell(qi, qj).num === num) {
-    //       return false;
-    //     }
-    //   }
-    // }
-    // return true;
+    }
+    return true;
   }
 
   private initializeHints() {
@@ -192,21 +153,21 @@ export class Board implements ReadonlyBoard {
   private deepCopy(board: Board) {
     const empty = !board;
     this.cells = new Map<string, Cell>();
-    this._highlighted = new Set<Cell>();
-    this._selected = null;
+    // this._highlighted = new Set<Cell>();
+    // this._selected = null;
     for (let i = 0; i < boardSize; i++) {
       for (let j = 0; j < boardSize; j++) {
         const key = this.genKey(i, j);
-        const c = empty ? new Cell(i, j) : board.get(key);
-        this.set(key, empty ? c : new Cell(i, j, c.num, c.valid, c.modifiable, new Set<number>(c.hints)));
+        const c = empty ? new Cell(key, i, j) : board.get(key);
+        this.set(key, empty ? c : new Cell(key, i, j, c.num, c.valid, c.modifiable, new Set<number>(c.hints)));
       }
     }
     this.valid = !empty && board.valid;
-    if (!empty) {
-      this._selected = board.selected ? this.getCell(board.selected.i, board.selected.j) : null;
-      this._highlighted.clear();
-      board._highlighted.forEach((c, k, set) => this._highlighted.add(this.getCell(c.i, c.j)));
-    }
+    // if (!empty) {
+    //   this._selected = board.selected ? this.getCell(board.selected.i, board.selected.j) : null;
+    //   this._highlighted.clear();
+    //   board._highlighted.forEach((c, k, set) => this._highlighted.add(this.getCell(c.i, c.j)));
+    // }
   }
 
   private set(key: string, cell: Cell) {
@@ -218,10 +179,7 @@ export class Board implements ReadonlyBoard {
   }
 
   private updateHints(cell: Cell, num: number) {
-    this.iterateOverRelatedCells(cell, (c) => {
-      c.hints.delete(num);
-      return true;
-    });
+    this.iterateOverRelatedCells(cell, (c) => c.hints.delete(num));
   }
 
   private updateHintsAfterUnset(cell: Cell, num: number) {
@@ -229,28 +187,27 @@ export class Board implements ReadonlyBoard {
       if (this.isMoveCorrect(c, num)) {
         c.hints.add(num);
       }
-      return true;
     });
   }
 
-  private iterateOverRelatedCells(c: Cell, callback: (cell: Cell) => boolean): boolean {
+  iterateOverRelatedCells(c: ReadonlyCell, callback: (cell: ReadonlyCell) => void) {
     for (let k = 0; k < boardSize; k++) {
       // console.log(`${k} => ${this.getCell(k, c.j)}`);
-      if (!callback(this.getCell(k, c.j)) || !callback(this.getCell(c.i, k))) {
-        return false;
-      }
+      callback(this.getCell(k, c.j));
+      callback(this.getCell(c.i, k));
     }
     const si = Math.floor(c.i / squareSize) * squareSize;
     const sj = Math.floor(c.j / squareSize) * squareSize;
     for (let i = si; i < si + squareSize; i++) {
       for (let j = sj; j < sj + squareSize; j++) {
         // console.log(`${i},${j}`);
-        if (!callback(this.getCell(i, j))) {
-          return false;
-        }
+        callback(this.getCell(i, j));
       }
     }
-    return true;
+  }
+
+  forEach(callback: (cell: ReadonlyCell) => void) {
+    this.cells.forEach(c => callback(c));
   }
 }
 

@@ -36,7 +36,7 @@ export class BoardComponent implements OnInit {
   }
 
   selectCell(cell: ReadonlyCell) {
-    this.board.selected = cell;
+    this.boardService.selected = cell;
     console.log(`${cell.i},${cell.j}`);
   }
 

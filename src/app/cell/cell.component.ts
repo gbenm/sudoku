@@ -1,31 +1,30 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {Cell, ReadonlyCell} from '../cell';
+import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {ReadonlyCell} from '../cell';
 import {BoardService} from '../board.service';
 import {HelperService} from '../helper.service';
-import {ReadonlyBoard} from '../board';
 
 @Component({
   selector: 'app-cell',
   templateUrl: './cell.component.html',
   styleUrls: ['./cell.component.scss']
 })
-export class CellComponent implements OnInit, OnChanges {
+export class CellComponent implements OnInit {
 
   @Input() cell: ReadonlyCell;
   hints: Array<number>;
-  board: ReadonlyBoard;
 
   constructor(private boardService: BoardService, private helper: HelperService) {
   }
 
   ngOnInit() {
-    this.boardService.getBoard().subscribe((board) => {
-      this.board = board;
+    this.boardService.getCell(this.cell).subscribe((c) => {
+      console.log(`${this.cell}: observe change ${c}`);
+      this.calcHints();
     });
-    this.calcHints();
   }
 
   private calcHints() {
+    console.log(`calc hints ${this.cell}`);
     this.hints = new Array<number>(9);
     this.cell.hints.forEach((val, i, set) => this.hints[val - 1] = val);
   }
@@ -39,12 +38,12 @@ export class CellComponent implements OnInit, OnChanges {
   }
 
   get selected(): boolean {
-    const sel = this.board.selected;
+    const sel = this.boardService.selected;
     return sel && sel === this.cell;
   }
 
   get highlighted(): boolean {
-    return this.board.highlighted.has(this.cell);
+    return this.boardService.highlighted.has(this.cell);
   }
 
   get number(): number {
@@ -58,11 +57,6 @@ export class CellComponent implements OnInit, OnChanges {
 
   rowHints(i: number): Array<number> {
     return this.hints.slice(i * 3, i * 3 + 3);
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(`change ${changes}`);
-    this.calcHints();
   }
 
 }

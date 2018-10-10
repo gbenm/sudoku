@@ -29,11 +29,11 @@ export class NumberButtonbarComponent implements OnInit {
   }
 
   get disabled(): boolean {
-    return !this.board.selected || !this.board.selected.modifiable;
+    return !this.boardService.selected || !this.boardService.selected.modifiable;
   }
 
   get unsetNumberDisabled(): boolean {
-    return !this.board.selected || this.board.selected.num === -1 || !this.board.selected.modifiable;
+    return !this.boardService.selected || this.boardService.selected.num === -1 || !this.boardService.selected.modifiable;
   }
 
   setNumber(num: number) {
