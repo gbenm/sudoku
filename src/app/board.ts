@@ -63,9 +63,9 @@ export class Board implements ReadonlyBoard {
     return boardSize;
   }
 
-  static generateSolutionRecursive(board: Board, keys: ReadonlyArray<string>): Board {
-    if (keys.length > 0) {
-      const remainingKeys = Array.from(keys);
+  static generateSolutionRecursive(board: Board, remainingKeys: Array<string>): Board {
+    if (remainingKeys.length > 0) {
+      // const remainingKeys = Array.from(keys);
       remainingKeys.sort((k1, k2) => board.get(k1).compare(board.get(k2)));
       const key = remainingKeys.shift();
       // console.log(`k ${remainingKeys}`);
@@ -76,16 +76,18 @@ export class Board implements ReadonlyBoard {
       console.log(`[${remainingKeys.length}] k ${key} hints ${numbers}`);
       while (numbers.length) {
         const num = numbers.shift();
-        let newBoard = new Board(board);
-        newBoard.setNumber(newBoard.get(key), num);
-        newBoard = Board.generateSolutionRecursive(newBoard, remainingKeys);
-        console.log(`${newBoard.valid} [${remainingKeys.length}] ${key} => ${num} hints [${numbers}]`);
-        if (newBoard.valid) {
-          return newBoard;
+        // let newBoard = new Board(board);
+        board.setNumber(board.get(key), num);
+        board = Board.generateSolutionRecursive(board, remainingKeys);
+        console.log(`${board.valid} [${remainingKeys.length}] ${key} => ${num} hints [${numbers}]`);
+        if (board.valid) {
+          return board;
         }
+        board.unsetNumber(board.get(key));
       }
+      remainingKeys.unshift(key);
     }
-    board.valid = keys.length === 0;
+    board.valid = remainingKeys.length === 0;
     return board;
   }
 
@@ -116,7 +118,7 @@ export class Board implements ReadonlyBoard {
   }
 
   setNumber(cell: Cell, num: number) {
-    console.log(`SET(${cell.i}, ${cell.j}) => ${num}`);
+    console.log(`set (${cell.i}, ${cell.j}) => ${num}`);
     cell.valid = this.isMoveCorrect(cell, num);
     cell.num = num;
     this.updateHints(cell, num);
@@ -127,6 +129,7 @@ export class Board implements ReadonlyBoard {
   // }
 
   unsetNumber(cell: Cell) {
+    console.log(`unset (${cell.i}, ${cell.j}) <= ${cell.num}`);
     const num = cell.num;
     cell.num = -1;
     cell.valid = false;
