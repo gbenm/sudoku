@@ -1,88 +1,11 @@
-<table class="board">
-  <tr *ngFor="let row of rows()">
-    <td *ngFor="let cell of cells(row)" [ngClass]="tdClass(cell)">
-      <app-cell [cell]="cell"></app-cell>
-    </td>
-  </tr>
-</table>
-
-
-<!--<mat-grid-list cols="{{board.size}}" rowHeight="1:1">-->
-<!--<ng-template ngFor let-cell [ngForOf]="rowHints()">-->
-<!--<mat-grid-tile (click)="selectCell(cell)" [ngClass]="cellClass(cell)" >-->
-<!--<app-cell [cell]="cell" ></app-cell>-->
-<!--</mat-grid-tile>-->
-<!--</ng-template>-->
-<!--</mat-grid-list>-->
-
-
-<!--<div>-->
-<!--<mat-table [dataSource]="dataSource">-->
-<!--<ng-container matColumnDef="1">-->
-<!--<mat-header-cell *matHeaderCellDef>1</mat-header-cell>-->
-<!--<mat-cell *matCellDef="let row">-->
-<!--<app-cell [cell]="row[0]"></app-cell>-->
-<!--</mat-cell>-->
-<!--</ng-container>-->
-
-<!--<ng-container matColumnDef="2">-->
-<!--<mat-header-cell *matHeaderCellDef>1</mat-header-cell>-->
-<!--<mat-cell *matCellDef="let row">-->
-<!--<app-cell [cell]="row[1]"></app-cell>-->
-<!--</mat-cell>-->
-<!--</ng-container>-->
-
-<!--<ng-container matColumnDef="3">-->
-<!--<mat-header-cell *matHeaderCellDef>1</mat-header-cell>-->
-<!--<mat-cell *matCellDef="let row">-->
-<!--<app-cell [cell]="row[2]"></app-cell>-->
-<!--</mat-cell>-->
-<!--</ng-container>-->
-
-<!--<ng-container matColumnDef="4">-->
-<!--<mat-header-cell *matHeaderCellDef>1</mat-header-cell>-->
-<!--<mat-cell *matCellDef="let row">-->
-<!--<app-cell [cell]="row[3]"></app-cell>-->
-<!--</mat-cell>-->
-<!--</ng-container>-->
-
-<!--<ng-container matColumnDef="5">-->
-<!--<mat-header-cell *matHeaderCellDef>1</mat-header-cell>-->
-<!--<mat-cell *matCellDef="let row">-->
-<!--<app-cell [cell]="row[4]"></app-cell>-->
-<!--</mat-cell>-->
-<!--</ng-container>-->
-
-<!--<ng-container matColumnDef="6">-->
-<!--<mat-header-cell *matHeaderCellDef>1</mat-header-cell>-->
-<!--<mat-cell *matCellDef="let row">-->
-<!--<app-cell [cell]="row[5]"></app-cell>-->
-<!--</mat-cell>-->
-<!--</ng-container>-->
-
-<!--<ng-container matColumnDef="7">-->
-<!--<mat-header-cell *matHeaderCellDef>1</mat-header-cell>-->
-<!--<mat-cell *matCellDef="let row">-->
-<!--<app-cell [cell]="row[6]"></app-cell>-->
-<!--</mat-cell>-->
-<!--</ng-container>-->
-
-<!--<ng-container matColumnDef="8">-->
-<!--<mat-header-cell *matHeaderCellDef>1</mat-header-cell>-->
-<!--<mat-cell *matCellDef="let row">-->
-<!--<app-cell [cell]="row[7]"></app-cell>-->
-<!--</mat-cell>-->
-<!--</ng-container>-->
-
-<!--<ng-container matColumnDef="9">-->
-<!--<mat-header-cell *matHeaderCellDef>1</mat-header-cell>-->
-<!--<mat-cell *matCellDef="let row">-->
-<!--<app-cell [cell]="row[8]"></app-cell>-->
-<!--</mat-cell>-->
-<!--</ng-container>-->
-
-<!--<mat-row-->
-<!--*matRowDef="let row; columns: ['1', '2', '3', '4', '5', '6', '7', '8', '9']"></mat-row>-->
-
-<!--</mat-table>-->
-<!--</div>-->
+<div class="board-container">
+  <table class="board">
+    <tr *ngFor="let row of rows()">
+      <td *ngFor="let cell of cells(row)" [ngClass]="tdClass(cell)">
+        <div class="board-cell">
+          <app-cell [cell]="cell"></app-cell>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>

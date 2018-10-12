@@ -16,27 +16,7 @@ export class NavigationComponent {
       map(result => result.matches)
     );
 
-  constructor(private breakpointObserver: BreakpointObserver, private boardService: BoardService) {
-  }
-
-  new() {
-    this.boardService.newBoard();
-  }
-
-  replay() {
-    this.boardService.resetBoard();
-  }
-
-  undoLastMove() {
-    this.boardService.undo();
-  }
-
-  isUndoAvailable(): boolean {
-    return this.boardService.isUndoAvailable();
-  }
-
-  verify() {
-    this.boardService.verify();
+  constructor(private breakpointObserver: BreakpointObserver) {
   }
 
 }

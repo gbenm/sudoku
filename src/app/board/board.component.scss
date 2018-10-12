@@ -1,52 +1,74 @@
+.board-container {
+  margin: 2px;
+  width: 100vw;
+  height: 100vw;
+  max-height: 33em;
+  max-width: 33em;
+  min-height: 300px;
+  min-width: 300px;
+}
 
 .board {
+  width: 100%;
+  height: 100%;
   border-collapse: collapse;
-  margin: 0.5em;
+  table-layout: fixed;
+}
+
+.board-cell {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 .board td {
-  border: solid thin;
+  width: 11.11%;
+  height: 11.11%;
+  position: relative;
+  border: solid 1px;
   margin: 0;
   padding: 0;
   cursor: pointer;
 
   &.board-top-left {
-    border-top: solid medium;
-    border-left: solid medium;
+    border-top: solid 2px;
+    border-left: solid 2px;
   }
 
   &.board-top-middle {
-    border-top: solid medium;
+    border-top: solid 2px;
   }
 
   &.board-top-right {
-    border-top: solid medium;
-    border-right: solid medium;
+    border-top: solid 2px;
+    border-right: solid 2px;
   }
 
   &.board-center-left {
-    border-left: solid medium;
+    border-left: solid 2px;
   }
 
   &.board-center-middle {
   }
 
   &.board-center-right {
-    border-right: solid medium;
+    border-right: solid 2px;
   }
 
   &.board-bottom-left {
-    border-bottom: solid medium;
-    border-left: solid medium;
+    border-bottom: solid 2px;
+    border-left: solid 2px;
   }
 
   &.board-bottom-middle {
-    border-bottom: solid medium;
+    border-bottom: solid 2px;
   }
 
   &.board-bottom-right {
-    border-bottom: solid medium;
-    border-right: solid medium;
+    border-bottom: solid 2px;
+    border-right: solid 2px;
   }
 
 }

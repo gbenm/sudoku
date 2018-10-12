@@ -135,14 +135,16 @@ export class BoardService {
   }
 
   setHint(num: number, skipHistory = false) {
-    console.log(`set hint ${this.selected} ${num}`);
-    if (!skipHistory) {
-      this.history.push(['H', this.selected, num]);
+    if (this.selected && this.selected.isEmpty()) {
+      console.log(`set hint ${this.selected} ${num}`);
+      if (!skipHistory) {
+        this.history.push(['H', this.selected, num]);
+      }
+      // this.board = new Board(this.board);
+      this.board.setHint(this.selected, num);
+      // this.boardObs.next(this.board);
+      this.cellObs.get(this.selected.key).next(this.selected);
     }
-    // this.board = new Board(this.board);
-    this.board.setHint(this.selected, num);
-    // this.boardObs.next(this.board);
-    this.cellObs.get(this.selected.key).next(this.selected);
   }
 
   undo() {

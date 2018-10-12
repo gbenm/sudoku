@@ -7,10 +7,7 @@ const boardSize = squareSize * 3;
 export interface ReadonlyBoard {
 
   readonly valid: boolean;
-  // selected: ReadonlyCell;
-  // readonly highlighted: Set<ReadonlyCell>;
   readonly size: number;
-
   getCell(i: number, j: number): ReadonlyCell;
 }
 
@@ -62,10 +59,21 @@ export class Board implements ReadonlyBoard {
   prepareBoardForGameplay() {
     const cells = Array.from(this.cells.values());
     Board.helper.shuffle(cells);
-    for (let i = 0; i < 50; i++) {
+    const nums = [];
+    let cnt = 0;
+    for (let i = 1; i <= this.size; i++) {
+      const n = 2 + Math.floor(Math.random() * 5);
+      cnt += n;
+      nums.push(n);
+    }
+    while (cnt && cells.length) {
       const c = cells.shift();
-      this.unsetNumber(c);
-      c.modifiable = true;
+      if (nums[c.num - 1] > 0) {
+        cnt--;
+        nums[c.num - 1] -= 1;
+        this.unsetNumber(c);
+        c.modifiable = true;
+      }
     }
   }
 
@@ -105,7 +113,7 @@ export class Board implements ReadonlyBoard {
   //   return [+key.substr(1, 1), +key.substr(2, 1)];
   // }
 
-  unsetNumber(cell: Cell) {
+  private unsetNumber(cell: Cell) {
     console.log(`unset ${cell}`);
     const num = cell.num;
     cell.num = emptyCell;
@@ -114,8 +122,11 @@ export class Board implements ReadonlyBoard {
   }
 
   setHint(cell: ReadonlyCell, num: number) {
-    // FIXME
-    cell.hints.add(num);
+    if (cell.hints.has(num)) {
+      cell.hints.delete(num);
+    } else {
+      cell.hints.add(num);
+    }
   }
 
   getCell(i: number, j: number): Cell {
@@ -216,6 +227,10 @@ export class Board implements ReadonlyBoard {
 
   forEach(callback: (cell: ReadonlyCell) => void) {
     this.cells.forEach(c => callback(c));
+  }
+
+  cellList(): Array<ReadonlyCell> {
+    return Array.from(this.cells.values());
   }
 }
 

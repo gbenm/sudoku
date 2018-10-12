@@ -8,16 +8,19 @@ import {CellComponent} from './cell/cell.component';
 import {NavigationComponent} from './navigation/navigation.component';
 import {LayoutModule} from '@angular/cdk/layout';
 import {
-  MatToolbarModule,
+  MatBadgeModule,
   MatButtonModule,
-  MatSidenavModule,
+  MatCardModule,
+  MatGridListModule,
   MatIconModule,
   MatListModule,
+  MatSidenavModule,
+  MatSlideToggleModule,
   MatTableModule,
-  MatGridListModule, MatCardModule, MatBadgeModule
+  MatToolbarModule
 } from '@angular/material';
-import {NumberButtonbarComponent} from './number-buttonbar/number-buttonbar.component';
-import {HintButtonbarComponent} from './hint-buttonbar/hint-buttonbar.component';
+import {GameComponent} from './game/game.component';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -25,12 +28,11 @@ import {HintButtonbarComponent} from './hint-buttonbar/hint-buttonbar.component'
     BoardComponent,
     CellComponent,
     NavigationComponent,
-    NumberButtonbarComponent,
-    HintButtonbarComponent
+    GameComponent
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule, LayoutModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule,
-    MatListModule, MatTableModule, MatGridListModule, MatCardModule, MatBadgeModule
+    MatListModule, MatTableModule, MatGridListModule, MatCardModule, MatBadgeModule, MatSlideToggleModule, FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

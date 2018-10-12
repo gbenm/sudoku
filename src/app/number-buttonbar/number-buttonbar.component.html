@@ -1,8 +1,0 @@
-<mat-toolbar>
-  <ng-container *ngFor="let b of buttons()">
-    <button mat-mini-fab color="primary" [disabled]="disabled(b)" (click)="setNumber(b)"
-            [matBadge]="numbers(b)" matBadgeColor="{{numbersAvailable(b) ? 'accent' : 'primary'}}"
-    >{{b}}</button>
-  </ng-container>
-  <button mat-icon-button (click)="unsetNumber()" [disabled]="unsetNumberDisabled()" ><mat-icon>delete</mat-icon></button>
-</mat-toolbar>

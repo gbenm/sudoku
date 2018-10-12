@@ -1,20 +1,17 @@
-<div class="cell" [ngClass]="{'selected' : selected, 'highlighted': highlighted, 'same-number': sameNumber}" (click)="selectCell(cell)">
+<div class="cell-container" [class.selected]="selected" [class.highlighted]="highlighted" [class.same-number]="sameNumber" (click)="selectCell(cell)">
 
-  <ng-template [ngIf]="cell.num > 0" [ngIfElse]="showInts">
-    <div class="cell-number" [class.invalid]="invalid" [class.modifiable]="modifiable">{{number}}</div>
+  <ng-template [ngIf]="cell.num > 0" [ngIfElse]="showHints">
+    <div class="cell-number" [class.invalid]="invalid" [class.modifiable]="modifiable">
+      {{number}}
+    </div>
   </ng-template>
 
-  <ng-template #showInts>
-    <table class="cell-hints">
-      <tbody>
-      <tr *ngFor="let r of rowsIndex()">
-        <td *ngFor="let hint of rowHints(r)">
-          <span *ngIf="hint; else nbsp">{{hint}}</span>
-          <ng-template #nbsp>&nbsp; &nbsp;</ng-template>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+  <ng-template #showHints>
+    <div class="cell-hint-container">
+      <div class="cell-hint" *ngFor="let hint of hints">
+        {{hint}}
+      </div>
+    </div>
   </ng-template>
 
 </div>

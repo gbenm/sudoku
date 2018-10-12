@@ -5,7 +5,7 @@
   $accent: map-get($theme, accent);
 
   .selected {
-    background-color: mat-color($accent, 400);
+    background-color: mat-color($primary, 300);
   }
 
   .highlighted {
@@ -17,23 +17,25 @@
   }
 
   .modifiable {
-    color: mat-color($mat-blue, 900);
+    color: mat-color($primary, 600);
   }
 
   .same-number {
-    background-color: mat-color($accent, 200);
+    background-color: mat-color($primary, 100);
   }
 
   .cell-number {
+    text-align: center;
     @extend .mat-title;
     margin: 0;
   }
 
-  .cell-hints {
+  .cell-hint {
     @extend .mat-caption;
     margin: 0;
     padding: 0;
-    height: 100%;
-    width: 100%;
+    line-height: 1;
+    text-align: center;
+    color: mat-color($accent);
   }
 }
