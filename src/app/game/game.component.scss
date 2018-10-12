@@ -6,13 +6,13 @@
 }
 
 .game-board-container {
-  margin-bottom: 1em;
   display: flex;
   align-content: center;
   justify-content: center;
 }
 
 .game-toolbar-container {
+  margin-top: 1.5em;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -21,11 +21,10 @@
   .game-toolbar-left-container {
     flex-grow: 1;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     align-items: center;
     justify-content: center;
     grid-row-gap: 1em;
-    margin-top: 1em;
 
     .game-toolbar-button {
       text-align: center;
@@ -34,5 +33,12 @@
 
   .game-toolbar-right-container {
     flex-grow: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    align-items: center;
+    justify-content: center;
+    grid-row-gap: 1em;
+    grid-column-gap: 0.5em;
   }
 }

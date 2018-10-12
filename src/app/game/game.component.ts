@@ -25,12 +25,20 @@ export class GameComponent implements OnInit {
     this.boardService.resetBoard();
   }
 
-  undoLastMove() {
+  undo() {
     this.boardService.undo();
   }
 
   isUndoAvailable(): boolean {
     return this.boardService.isUndoAvailable();
+  }
+
+  redo() {
+
+  }
+
+  isRedoAvailable(): boolean {
+    return true;
   }
 
   verify() {

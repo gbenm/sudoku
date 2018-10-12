@@ -30,25 +30,46 @@
   <div class="game-toolbar-container">
 
     <div class="game-toolbar-left-container">
+
       <div class="game-toolbar-button" *ngFor="let b of buttons()">
         <button mat-mini-fab (click)="buttonClicked(b)" color=""
                 [matBadge]="numbers(b)" matBadgeColor="{{numbersAvailable(b) ? '' : 'accent'}}"
         >{{b}}
         </button>
       </div>
+
+    </div>
+
+    <div class="game-toolbar-right-container">
+
+      <div class="game-toolbar-button">
+        <button mat-mini-fab (click)="undo()" [disabled]="isUndoAvailable()" color="">
+          <mat-icon>undo</mat-icon>
+        </button>
+      </div>
+
+      <div class="game-toolbar-button">
+        <button mat-mini-fab (click)="redo()" [disabled]="isRedoAvailable()" color="">
+          <mat-icon>redo</mat-icon>
+        </button>
+      </div>
+
+      <div class="game-toolbar-button">
+        <mat-slide-toggle
+          color="accent"
+          [(ngModel)]="buttonMode"
+        >
+        </mat-slide-toggle>
+      </div>
+
+      <div class="game-toolbar-button"></div>
+
       <div class="game-toolbar-button">
         <button mat-mini-fab (click)="unsetNumber()" [disabled]="unsetNumberDisabled()" color="">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
-    </div>
 
-    <div class="game-toolbar-right-container">
-      <mat-slide-toggle
-        color="accent"
-        [(ngModel)]="buttonMode"
-        >
-      </mat-slide-toggle>
     </div>
 
   </div>
