@@ -49,7 +49,7 @@ export class Board implements ReadonlyBoard {
             return;
           }
         }
-        this.unsetNumber(cell);
+        this.setNumber(cell, emptyCell);
       }
       keys.unshift(key);
     }
@@ -71,7 +71,7 @@ export class Board implements ReadonlyBoard {
       if (nums[c.num - 1] > 0) {
         cnt--;
         nums[c.num - 1] -= 1;
-        this.unsetNumber(c);
+        this.setNumber(c, emptyCell);
         c.modifiable = true;
       }
     }
@@ -97,29 +97,30 @@ export class Board implements ReadonlyBoard {
     this.setNumber(cell as Cell, num);
   }
 
-  unsetNum(cell: ReadonlyCell) {
-    this.unsetNumber(cell as Cell);
-  }
+  // unsetNum(cell: ReadonlyCell) {
+  //   this.unsetNumber(cell as Cell);
+  // }
 
   private setNumber(cell: Cell, num: number): boolean {
-    console.log(`set ${cell} => ${num}`);
-    cell.valid = this.isMoveCorrect(cell, num);
+    const origNum = cell.num;
+    console.log(`set ${cell} ${origNum} => ${num}`);
+    cell.valid = num !== emptyCell && this.isMoveCorrect(cell, num);
     cell.num = num;
-    this.updateHints(cell, num);
+    if (num === emptyCell) {
+      this.updateHintsAfterUnset(cell, origNum);
+    } else {
+      this.updateHints(cell, num);
+    }
     return cell.valid;
   }
 
-  // genIndex(key: string): Array<number> {
-  //   return [+key.substr(1, 1), +key.substr(2, 1)];
+  // private unsetNumber(cell: Cell) {
+  //   console.log(`unset ${cell}`);
+  //   const num = cell.num;
+  //   cell.num = emptyCell;
+  //   cell.valid = false;
+  //   this.updateHintsAfterUnset(cell, num);
   // }
-
-  private unsetNumber(cell: Cell) {
-    console.log(`unset ${cell}`);
-    const num = cell.num;
-    cell.num = emptyCell;
-    cell.valid = false;
-    this.updateHintsAfterUnset(cell, num);
-  }
 
   setHint(cell: ReadonlyCell, num: number) {
     if (cell.hints.has(num)) {

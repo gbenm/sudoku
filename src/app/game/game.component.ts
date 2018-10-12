@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BoardService} from '../board.service';
 import {HelperService} from '../helper.service';
+import {emptyCell} from '../cell';
 
 @Component({
   selector: 'app-game',
@@ -22,23 +23,25 @@ export class GameComponent implements OnInit {
   }
 
   replay() {
-    this.boardService.resetBoard();
+    while (this.boardService.undo()) {}
   }
 
   undo() {
+    console.log(`undo`);
     this.boardService.undo();
   }
 
-  isUndoAvailable(): boolean {
-    return this.boardService.isUndoAvailable();
+  undoDisabled(): boolean {
+    return !this.boardService.isUndoAvailable();
   }
 
   redo() {
-
+    console.log(`redo`);
+    this.boardService.redo();
   }
 
-  isRedoAvailable(): boolean {
-    return true;
+  redoDisabled(): boolean {
+    return !this.boardService.isRedoAvailable();
   }
 
   verify() {
@@ -84,7 +87,7 @@ export class GameComponent implements OnInit {
 
   unsetNumber() {
     console.log(`button unset number`);
-    this.boardService.unsetNumber();
+    this.boardService.setNumber(emptyCell);
   }
 
   // setHint(num: number) {

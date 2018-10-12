@@ -6,16 +6,13 @@
       <button mat-icon-button (click)="new()">
         <mat-icon aria-label="New Game">playlist_play</mat-icon>
       </button>
-      <button mat-icon-button [disabled]="!isUndoAvailable()" (click)="replay()">
+      <button mat-icon-button [disabled]="undoDisabled()" (click)="replay()">
         <mat-icon aria-label="Replay game">replay</mat-icon>
       </button>
       <button mat-icon-button (click)="verify()">
         <mat-icon aria-label="New Game">build</mat-icon>
       </button>
       <span class="filler"></span>
-      <button mat-icon-button [disabled]="!isUndoAvailable()" (click)="undoLastMove()">
-        <mat-icon aria-label="Undo last move">undo</mat-icon>
-      </button>
     </mat-toolbar>
   </div>
   <!-- Add Content Here -->
@@ -43,13 +40,13 @@
     <div class="game-toolbar-right-container">
 
       <div class="game-toolbar-button">
-        <button mat-mini-fab (click)="undo()" [disabled]="isUndoAvailable()" color="">
+        <button mat-mini-fab (click)="undo()" [disabled]="undoDisabled()" color="">
           <mat-icon>undo</mat-icon>
         </button>
       </div>
 
       <div class="game-toolbar-button">
-        <button mat-mini-fab (click)="redo()" [disabled]="isRedoAvailable()" color="">
+        <button mat-mini-fab (click)="redo()" [disabled]="redoDisabled()" color="">
           <mat-icon>redo</mat-icon>
         </button>
       </div>

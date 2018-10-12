@@ -10,7 +10,8 @@ import {emptyCell, ReadonlyCell} from './cell';
 export class BoardService {
 
   private board: Board;
-  private history: Array<[string, ReadonlyCell, number]>;
+  private history: Array<[string, ReadonlyCell, number, number]>;
+  private historyPos: number;
   private boardObs: BehaviorSubject<ReadonlyBoard>;
   private cellObs: Map<string, BehaviorSubject<ReadonlyCell>>;
   private _selected: ReadonlyCell;
@@ -20,6 +21,33 @@ export class BoardService {
 
   constructor(private helper: HelperService) {
     this.init(0);
+  }
+
+  private init(num: number) {
+    console.log(`generate`);
+    Board.setHelper(this.helper);
+    this.createNewBoard();
+    this.boardObs = new BehaviorSubject<ReadonlyBoard>(this.board);
+    this.cellObs = new Map<string, BehaviorSubject<ReadonlyCell>>();
+    this.board.forEach(c => this.cellObs.set(c.key, new BehaviorSubject<ReadonlyCell>(c)));
+  }
+
+  private createNewBoard() {
+    this.board = new Board();
+    this.board.generateSolution();
+    this.history = new Array<[string, ReadonlyCell, number, number]>();
+    this.historyPos = 0;
+    this._selected = null;
+    this._highlighted = new Set<ReadonlyCell>();
+    this._numbers = new Map<number, Set<ReadonlyCell>>();
+    for (let i = 1; i <= this.boardSize; i++) {
+      this._numbers.set(i, new Set<ReadonlyCell>());
+    }
+    this.board.forEach(c => {
+      if (!c.isEmpty()) {
+        this._numbers.get(c.num).add(c);
+      }
+    });
   }
 
   get boardSize(): number {
@@ -72,42 +100,16 @@ export class BoardService {
     return this._numbers;
   }
 
-  private init(num: number) {
-    console.log(`generate`);
-    Board.setHelper(this.helper);
-    this.createNewBoard();
-    this.boardObs = new BehaviorSubject<ReadonlyBoard>(this.board);
-    this.cellObs = new Map<string, BehaviorSubject<ReadonlyCell>>();
-    this.board.forEach(c => this.cellObs.set(c.key, new BehaviorSubject<ReadonlyCell>(c)));
-  }
-
-  private createNewBoard() {
-    this.board = new Board();
-    this.board.generateSolution();
-    this.history = new Array<[string, ReadonlyCell, number]>();
-    this._selected = null;
-    this._highlighted = new Set<ReadonlyCell>();
-    this._numbers = new Map<number, Set<ReadonlyCell>>();
-    for (let i = 1; i <= this.boardSize; i++) {
-      this._numbers.set(i, new Set<ReadonlyCell>());
-    }
-    this.board.forEach(c => {
-      if (!c.isEmpty()) {
-        this._numbers.get(c.num).add(c);
-      }
-    });
-  }
-
   setNumber(num: number, skipHistory = false) {
     if (num !== this.selected.num) {
       console.log(`set number ${this.selected} ${num}`);
-      if (!skipHistory) {
-        this.history.push(['N', this.selected, this.selected.num]);
-      }
+      this.pushMoveInHistory(['N', this.selected, this.selected.num, num], skipHistory);
       if (!this._selected.isEmpty()) {
         this._numbers.get(this._selected.num).delete(this._selected);
       }
-      this._numbers.get(num).add(this._selected);
+      if (num !== emptyCell) {
+        this._numbers.get(num).add(this._selected);
+      }
       this.board.setNum(this.selected, num);
       // hack to force highlights update
       const sel = this.selected;
@@ -118,54 +120,62 @@ export class BoardService {
     }
   }
 
-  unsetNumber(skipHistory = false) {
-    console.log(`unset number ${this.selected}`);
-    if (!skipHistory) {
-      this.history.push(['N', this.selected, this.selected.num]);
-    }
-    // this.board = new Board(this.board);
-    this._numbers.get(this.selected.num).delete(this.selected);
-    this.board.unsetNum(this.selected);
-    const sel = this.selected;
-    this.selected = null;
-    this.selected = sel;
-    // this.boardObs.next(this.board);
-    this.cellObs.get(this.selected.key).next(this.selected);
-    this._highlighted.forEach(c => this.cellObs.get(c.key).next(c));
-  }
-
   setHint(num: number, skipHistory = false) {
     if (this.selected && this.selected.isEmpty()) {
       console.log(`set hint ${this.selected} ${num}`);
-      if (!skipHistory) {
-        this.history.push(['H', this.selected, num]);
-      }
-      // this.board = new Board(this.board);
+      this.pushMoveInHistory(['H', this.selected, num, null], skipHistory);
       this.board.setHint(this.selected, num);
-      // this.boardObs.next(this.board);
       this.cellObs.get(this.selected.key).next(this.selected);
     }
   }
 
-  undo() {
-    const op = this.history.pop();
-    if (op) {
-      this._selected = null;
-      this.selected = op[1];
-      if (op[0] === 'N') {
-        if (op[2] === emptyCell) {
-          this.unsetNumber(true);
-        } else {
-          this.setNumber(op[2], true);
-        }
-      } else {
-        this.setHint(op[2], true);
+  private pushMoveInHistory(move: [string, ReadonlyCell, number, number], skip = false) {
+    if (!skip) {
+      if (this.historyPos < this.history.length) {
+        this.history.splice(this.historyPos);
       }
+      this.history.push(move);
+      this.historyPos = this.history.length;
     }
   }
 
+  private applyMoveFromHistory(isRedo = false) {
+      const op = this.history[this.historyPos];
+      if (op) {
+        this._selected = null;
+        this.selected = op[1];
+        if (op[0] === 'N') {
+          this.setNumber(isRedo ? op[3] : op[2], true);
+        } else {
+          this.setHint(op[2], true);
+        }
+      }
+  }
+
+  undo(): boolean {
+    if (this.history.length && this.historyPos > 0) {
+      this.historyPos -= 1;
+      this.applyMoveFromHistory(false);
+      return true;
+    }
+    return false;
+  }
+
+  redo(): boolean {
+    if (this.history.length && this.historyPos < this.history.length) {
+      this.applyMoveFromHistory(true);
+      this.historyPos += 1;
+      return true;
+    }
+    return false;
+  }
+
   isUndoAvailable(): boolean {
-    return this.history.length > 0;
+    return this.historyPos > 0;
+  }
+
+  isRedoAvailable(): boolean {
+    return this.history.length && this.historyPos < this.history.length;
   }
 
   getBoard(): Observable<ReadonlyBoard> {
@@ -179,12 +189,6 @@ export class BoardService {
   newBoard() {
     this.createNewBoard();
     this.boardObs.next(this.board);
-  }
-
-  resetBoard() {
-    while (this.history.length) {
-      this.undo();
-    }
   }
 
   verify() {
