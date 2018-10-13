@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ReadonlyCell} from '../cell';
 import {BoardService} from '../board.service';
 import {HelperService} from '../helper.service';
@@ -25,8 +25,8 @@ export class CellComponent implements OnInit {
 
   private calcHints() {
     // console.log(`calc hints ${this.cell}`);
-    this.hints = new Array<number>(9);
-    this.cell.hints.forEach((val, i, set) => this.hints[val - 1] = val);
+    this.hints = new Array<number>(this.boardService.boardSize);
+    this.cell.hints.forEach((val) => this.hints[val - 1] = val);
   }
 
   get invalid(): boolean {
@@ -55,13 +55,8 @@ export class CellComponent implements OnInit {
     return this.cell.num;
   }
 
-  rowsIndex(): Array<number> {
-    // FIXME
-    return this.helper.progr(3);
-  }
-
-  rowHints(i: number): Array<number> {
-    return this.hints.slice(i * 3, i * 3 + 3);
+  hintHighlighted(num: number): boolean {
+    return this.boardService.selected && num === this.boardService.selected.num;
   }
 
   selectCell(cell: ReadonlyCell) {

@@ -24,6 +24,10 @@
     background-color: mat-color($primary, 100);
   }
 
+  .hint-highlighted {
+    color: mat-color($accent, 900) !important;
+  }
+
   .cell-number {
     text-align: center;
     @extend .mat-title;

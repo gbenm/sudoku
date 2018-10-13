@@ -8,7 +8,7 @@
 
   <ng-template #showHints>
     <div class="cell-hint-container">
-      <div class="cell-hint" *ngFor="let hint of hints">
+      <div class="cell-hint" *ngFor="let hint of hints" [class.hint-highlighted]="hintHighlighted(hint)">
         {{hint}}
       </div>
     </div>
