@@ -8,14 +8,28 @@ const boardSize = squareSize * 3;
 export interface ReadonlyBoard {
   readonly completed: boolean;
   readonly size: number;
+
   getCell(i: number, j: number): ReadonlyCell;
+}
+
+class Stats {
+  moves = 0;
+  choiceRange: Array<number> = new Array<number>(boardSize + 1).fill(0);
+  backMoves = 0;
+
+  toString(): string {
+    return `{moves: ${this.moves}, backMoves=${this.backMoves}, choiceRange: [${this.choiceRange}]`;
+  }
 }
 
 export class Board implements ReadonlyBoard {
 
   private static helper: HelperService;
+  private static levels: Array<[number, number, number]> = [[40, 4, 1.6], [50, 3, 1.6], [62, 2, 1.8]];
+
   private _completed: boolean;
   private cells: Map<string, Cell>;
+  stats: Stats;
 
   constructor(board?: Board) {
     this.deepCopy(board);
@@ -33,75 +47,13 @@ export class Board implements ReadonlyBoard {
     Board.helper = helper;
   }
 
-  generateSolutionRecursive(keys: Array<string>): boolean {
-    if (keys.length > 0) {
-      // order keys to have the cells with minimum number of hints first
-      keys.sort((k1, k2) => this.get(k1).compare(this.get(k2)));
-      const key = keys.shift();
-      const cell = this.get(key);
-      const hints = Array.from(this.get(key).hints);
-      Board.helper.shuffle(hints);
-      console.log(`[${keys.length}] k ${key} hints ${hints}`);
-      while (hints.length) {
-        const num = hints.shift();
-        assert(this.setNumber(cell, num));
-        this.generateSolutionRecursive(keys);
-        console.log(`${this._completed} [${keys.length}] ${key} => ${num} hints [${hints}]`);
-        if (this.completed) {
-          return true;
-        }
-        this.setNumber(cell, emptyCell);
-      }
-      keys.unshift(key);
-    }
-    this._completed = keys.length === 0;
-    return this.completed;
-  }
-
-  prepareBoardForGameplay() {
-    const cells = Array.from(this.cells.values());
-    Board.helper.shuffle(cells);
-    const nums = [];
-    let cnt = 0;
-    for (let i = 1; i <= this.size; i++) {
-      const n = 2 + Math.floor(Math.random() * 5);
-      cnt += n;
-      nums.push(n);
-    }
-    while (cnt && cells.length) {
-      const c = cells.shift();
-      if (nums[c.num - 1] > 0) {
-        cnt--;
-        nums[c.num - 1] -= 1;
-        this.setNumber(c, emptyCell);
-        c.modifiable = true;
-      }
-    }
-  }
-
-  generateSolution() {
-    const keys = new Array<string>();
-    this.cells.forEach((c) => {
-      if (c.isEmpty()) {
-        keys.push(c.key);
-      }
-    });
-    Board.helper.shuffle(keys);
-    // assign a random value to cell.k to randomly select rowHints with same hint size
-    keys.forEach((key, i) => this.get(key).k = i);
-    const res = this.generateSolutionRecursive(keys);
-    if (res) {
-      this.prepareBoardForGameplay();
-    }
-  }
-
   setNum(cell: ReadonlyCell, num: number) {
     this.setNumber(cell as Cell, num);
   }
 
   private setNumber(cell: Cell, num: number): boolean {
     const origNum = cell.num;
-    console.log(`set ${cell} ${origNum} => ${num}`);
+    // console.log(`set ${cell} => ${num}`);
     cell.valid = num !== emptyCell && this.isMoveCorrect(cell, num);
     cell.num = num;
     if (num === emptyCell) {
@@ -215,4 +167,120 @@ export class Board implements ReadonlyBoard {
   cellList(): Array<ReadonlyCell> {
     return Array.from(this.cells.values());
   }
+
+  private generateSolutionRecursive(keys: Array<string>): boolean {
+    if (keys.length > 0) {
+      // order keys to have the cells with minimum number of hints first
+      keys.sort((k1, k2) => this.get(k1).compare(this.get(k2)));
+      const key = keys.shift();
+      const cell = this.get(key);
+      const hints = Array.from(this.get(key).hints);
+      Board.helper.shuffle(hints);
+      const choiceRange = hints.length;
+      this.stats.choiceRange[choiceRange]++;
+      // console.log(`[${keys.length}] k ${key} hints ${hints}`);
+      while (hints.length) {
+        const num = hints.shift();
+        assert(this.setNumber(cell, num));
+        this.generateSolutionRecursive(keys);
+        this.stats.moves++;
+        // console.log(`${this._completed} [${keys.length}] ${key} => ${num} hints [${hints}]`);
+        if (this.completed) {
+          return true;
+        }
+        this.stats.backMoves++;
+        this.setNumber(cell, emptyCell);
+      }
+      keys.unshift(key);
+    }
+    this._completed = keys.length === 0;
+    return this.completed;
+  }
+
+  generateSolution(fromScratch: boolean): boolean {
+    if (fromScratch) {
+      for (let k = 0; k < squareSize; k++) {
+        const nums = Board.helper.progr(this.size, 1);
+        Board.helper.shuffle(nums);
+        for (let i = k * squareSize; i < k * squareSize + squareSize; i++) {
+          for (let j = k * squareSize; j < k * squareSize + squareSize; j++) {
+            this.setNumber(this.getCell(i, j), nums.pop());
+          }
+        }
+      }
+    }
+    this.stats = new Stats();
+    const keys = [];
+    this.cells.forEach((c) => {
+      if (c.isEmpty()) {
+        keys.push(c.key);
+      }
+    });
+    Board.helper.shuffle(keys);
+    // assign a random value to cell.k to randomly select rowHints with same hint size
+    keys.forEach((key, i) => this.get(key).k = i);
+    const res = this.generateSolutionRecursive(keys);
+    console.log(`STATS ${this.stats}`);
+    return res;
+  }
+
+  prepareBoardForGameplay(level: number = 0) {
+    const [minCnt, minBoxCnt, minDist] = Board.levels[level];
+
+    const cells = Array.from(this.cells.values());
+    Board.helper.shuffle(cells);
+
+    const numMap = new Map<number, Array<Cell>>();
+    for (let n = 1; n <= this.size; n++) {
+      numMap.set(n, []);
+    }
+    cells.forEach((c) => numMap.get(c.num).push(c));
+
+    const nums = [];
+    const boxCnt = new Array<number>(this.size).fill(this.size);
+    let cnt = 0;
+    while (cells.length && cnt < minCnt) {
+      const c = cells.shift();
+      const bi = Math.floor(c.i / squareSize) * squareSize + Math.floor(c.j / squareSize);
+      if (boxCnt[bi] > minBoxCnt && this.checkDistance(c, numMap, minDist)) {
+        cnt++;
+        boxCnt[bi]--;
+        const arr = numMap.get(c.num);
+        arr.splice(arr.indexOf(c), 1);
+        this.setNumber(c, emptyCell);
+        c.modifiable = true;
+        console.log(`removed ${c}`);
+      }
+    }
+    console.log(`removed ${cnt} numbers`);
+  }
+
+  private checkDistance(c: Cell, numMap: Map<number, Array<Cell>>, minDist: number): boolean {
+    let arr = numMap.get(c.num);
+    if (arr.length > 4) {
+      return true;
+    }
+    if (arr.length < 3) {
+      return false;
+    }
+    arr = Array.from(arr);
+    arr.splice(arr.indexOf(c), 1);
+    let dist = 0;
+    let cnt = 0;
+    for (let i = 0; i < arr.length - 1; i++) {
+      const a = arr[i];
+      const ai = Math.floor(a.i / squareSize);
+      const aj = Math.floor(a.j / squareSize);
+      for (let j = i + 1; j < arr.length; j++) {
+        const b = arr[j];
+        const bi = Math.floor(b.i / squareSize);
+        const bj = Math.floor(b.j / squareSize);
+        dist += Math.sign(Math.abs(ai - bi)) + Math.sign(Math.abs(aj - bj));
+        cnt++;
+      }
+    }
+    console.log(`dist ${c} = ${dist / cnt} [${arr}]`);
+    return (dist / cnt) < minDist;
+  }
+
 }

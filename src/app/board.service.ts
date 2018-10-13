@@ -17,6 +17,7 @@ export class BoardService {
   private _selected: ReadonlyCell;
   private _highlighted: Set<ReadonlyCell>;
   private _numbers: Map<number, Set<ReadonlyCell>>;
+  private _level = 0;
 
 
   constructor(private helper: HelperService) {
@@ -34,7 +35,8 @@ export class BoardService {
 
   private createNewBoard() {
     this.board = new Board();
-    this.board.generateSolution();
+    this.board.generateSolution(true);
+    this.board.prepareBoardForGameplay(this.level);
     this.history = new Array<[string, ReadonlyCell, number, number]>();
     this.historyPos = 0;
     this._selected = null;
@@ -48,6 +50,10 @@ export class BoardService {
         this._numbers.get(c.num).add(c);
       }
     });
+  }
+
+  get level(): number {
+    return this._level;
   }
 
   get boardSize(): number {
@@ -140,16 +146,16 @@ export class BoardService {
   }
 
   private applyMoveFromHistory(isRedo = false) {
-      const op = this.history[this.historyPos];
-      if (op) {
-        this._selected = null;
-        this.selected = op[1];
-        if (op[0] === 'N') {
-          this.setNumber(isRedo ? op[3] : op[2], true);
-        } else {
-          this.setHint(op[2], true);
-        }
+    const op = this.history[this.historyPos];
+    if (op) {
+      this._selected = null;
+      this.selected = op[1];
+      if (op[0] === 'N') {
+        this.setNumber(isRedo ? op[3] : op[2], true);
+      } else {
+        this.setHint(op[2], true);
       }
+    }
   }
 
   undo(): boolean {
@@ -193,6 +199,6 @@ export class BoardService {
 
   verify() {
     const b = new Board(this.board);
-    b.generateSolution();
+    b.generateSolution(false);
   }
 }
