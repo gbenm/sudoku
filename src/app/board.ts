@@ -1,12 +1,12 @@
 import {Cell, emptyCell, ReadonlyCell} from './cell';
 import {HelperService} from './helper.service';
+import * as assert from 'assert';
 
 const squareSize = 3;
 const boardSize = squareSize * 3;
 
 export interface ReadonlyBoard {
-
-  readonly valid: boolean;
+  readonly completed: boolean;
   readonly size: number;
   getCell(i: number, j: number): ReadonlyCell;
 }
@@ -14,7 +14,7 @@ export interface ReadonlyBoard {
 export class Board implements ReadonlyBoard {
 
   private static helper: HelperService;
-  valid: boolean;
+  private _completed: boolean;
   private cells: Map<string, Cell>;
 
   constructor(board?: Board) {
@@ -25,35 +25,37 @@ export class Board implements ReadonlyBoard {
     return boardSize;
   }
 
+  get completed(): boolean {
+    return this._completed;
+  }
+
   static setHelper(helper: HelperService) {
     Board.helper = helper;
   }
 
-  generateSolutionRecursive(keys: Array<string>) {
+  generateSolutionRecursive(keys: Array<string>): boolean {
     if (keys.length > 0) {
-      // const keys = Array.from(keys);
+      // order keys to have the cells with minimum number of hints first
       keys.sort((k1, k2) => this.get(k1).compare(this.get(k2)));
       const key = keys.shift();
       const cell = this.get(key);
-      // console.log(`k ${keys}`);
-      // const [i, j] = board.genIndex(key);
-      const numbers = Array.from(this.get(key).hints);
-      Board.helper.shuffle(numbers);
-      console.log(`[${keys.length}] k ${key} hints ${numbers}`);
-      while (numbers.length) {
-        const num = numbers.shift();
-        if (this.setNumber(cell, num)) {
-          this.generateSolutionRecursive(keys);
-          console.log(`${this.valid} [${keys.length}] ${key} => ${num} hints [${numbers}]`);
-          if (this.valid) {
-            return;
-          }
+      const hints = Array.from(this.get(key).hints);
+      Board.helper.shuffle(hints);
+      console.log(`[${keys.length}] k ${key} hints ${hints}`);
+      while (hints.length) {
+        const num = hints.shift();
+        assert(this.setNumber(cell, num));
+        this.generateSolutionRecursive(keys);
+        console.log(`${this._completed} [${keys.length}] ${key} => ${num} hints [${hints}]`);
+        if (this.completed) {
+          return true;
         }
         this.setNumber(cell, emptyCell);
       }
       keys.unshift(key);
     }
-    this.valid = keys.length === 0;
+    this._completed = keys.length === 0;
+    return this.completed;
   }
 
   prepareBoardForGameplay() {
@@ -78,28 +80,24 @@ export class Board implements ReadonlyBoard {
   }
 
   generateSolution() {
-    this.initializeHints();
     const keys = new Array<string>();
     this.cells.forEach((c) => {
       if (c.isEmpty()) {
         keys.push(c.key);
       }
     });
-    // const keys = Array.from(this.cells.keys());
     Board.helper.shuffle(keys);
     // assign a random value to cell.k to randomly select rowHints with same hint size
     keys.forEach((key, i) => this.get(key).k = i);
-    this.generateSolutionRecursive(keys);
-    this.prepareBoardForGameplay();
+    const res = this.generateSolutionRecursive(keys);
+    if (res) {
+      this.prepareBoardForGameplay();
+    }
   }
 
   setNum(cell: ReadonlyCell, num: number) {
     this.setNumber(cell as Cell, num);
   }
-
-  // unsetNum(cell: ReadonlyCell) {
-  //   this.unsetNumber(cell as Cell);
-  // }
 
   private setNumber(cell: Cell, num: number): boolean {
     const origNum = cell.num;
@@ -113,14 +111,6 @@ export class Board implements ReadonlyBoard {
     }
     return cell.valid;
   }
-
-  // private unsetNumber(cell: Cell) {
-  //   console.log(`unset ${cell}`);
-  //   const num = cell.num;
-  //   cell.num = emptyCell;
-  //   cell.valid = false;
-  //   this.updateHintsAfterUnset(cell, num);
-  // }
 
   setHint(cell: ReadonlyCell, num: number) {
     if (cell.hints.has(num)) {
@@ -154,7 +144,7 @@ export class Board implements ReadonlyBoard {
     const sj = Math.floor(cell.j / squareSize) * squareSize;
     for (let i = si; i < si + squareSize; i++) {
       for (let j = sj; j < sj + squareSize; j++) {
-        if (i !== cell.i && j !== cell.j && this.getCell(i, j).num === num) {
+        if ((i !== cell.i || j !== cell.j) && this.getCell(i, j).num === num) {
           return false;
         }
       }
@@ -162,32 +152,18 @@ export class Board implements ReadonlyBoard {
     return true;
   }
 
-  private initializeHints() {
-    const h = new Array<number>(boardSize);
-    for (let i = 1; i <= boardSize; i++) {
-      h[i - 1] = i;
-    }
-    this.cells.forEach((c) => c.hints = new Set<number>(h));
-  }
-
   private deepCopy(board: Board) {
     const empty = !board;
+    const hints = empty ? Board.helper.progr(boardSize, 1) : null;
     this.cells = new Map<string, Cell>();
-    // this._highlighted = new Set<Cell>();
-    // this._selected = null;
     for (let i = 0; i < boardSize; i++) {
       for (let j = 0; j < boardSize; j++) {
         const key = this.genKey(i, j);
-        const c = empty ? new Cell(key, i, j) : board.get(key);
-        this.set(key, empty ? c : new Cell(key, i, j, c.num, c.valid, c.modifiable, new Set<number>(c.hints)));
+        const c = empty ? new Cell(key, i, j, new Set<number>(hints)) : board.get(key);
+        this.set(key, empty ? c : new Cell(key, i, j, new Set<number>(c.hints), c.num, c.valid, c.modifiable));
       }
     }
-    this.valid = !empty && board.valid;
-    // if (!empty) {
-    //   this._selected = board.selected ? this.getCell(board.selected.i, board.selected.j) : null;
-    //   this._highlighted.clear();
-    //   board._highlighted.forEach((c, k, set) => this._highlighted.add(this.getCell(c.i, c.j)));
-    // }
+    this._completed = !empty && board.completed;
   }
 
   private set(key: string, cell: Cell) {
@@ -213,15 +189,21 @@ export class Board implements ReadonlyBoard {
   iterateOverRelatedCells(c: ReadonlyCell, callback: (cell: ReadonlyCell) => void) {
     for (let k = 0; k < boardSize; k++) {
       // console.log(`${k} => ${this.getCell(k, c.j)}`);
-      callback(this.getCell(k, c.j));
-      callback(this.getCell(c.i, k));
+      if (k !== c.i) {
+        callback(this.getCell(k, c.j));
+      }
+      if (k !== c.j) {
+        callback(this.getCell(c.i, k));
+      }
     }
     const si = Math.floor(c.i / squareSize) * squareSize;
     const sj = Math.floor(c.j / squareSize) * squareSize;
     for (let i = si; i < si + squareSize; i++) {
       for (let j = sj; j < sj + squareSize; j++) {
         // console.log(`${i},${j}`);
-        callback(this.getCell(i, j));
+        if (i !== c.i && j !== c.j) {
+          callback(this.getCell(i, j));
+        }
       }
     }
   }
@@ -234,4 +216,3 @@ export class Board implements ReadonlyBoard {
     return Array.from(this.cells.values());
   }
 }
-

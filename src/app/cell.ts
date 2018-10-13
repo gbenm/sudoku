@@ -15,8 +15,13 @@ export interface ReadonlyCell {
 export class Cell implements ReadonlyCell {
   k: number;
 
-  constructor(public readonly key: string, public readonly i: number, public readonly j: number, public num: number = emptyCell,
-              public valid: boolean = false, public modifiable: boolean = false, public hints: Set<number> = new Set<number>()) {
+  constructor(public readonly key: string, public readonly i: number, public readonly j: number,
+              private _hints: Set<number> = new Set<number>(), public num: number = emptyCell,
+              public valid: boolean = false, public modifiable: boolean = false) {
+  }
+
+  get hints(): Set<number> {
+    return this._hints;
   }
 
   compare(other: Cell): number {

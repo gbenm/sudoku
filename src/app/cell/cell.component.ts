@@ -18,13 +18,13 @@ export class CellComponent implements OnInit {
 
   ngOnInit() {
     this.boardService.getCell(this.cell).subscribe((c) => {
-      console.log(`${this.cell}: observe change ${c}`);
+      // console.log(`${this.cell}: observe change ${c}`);
       this.calcHints();
     });
   }
 
   private calcHints() {
-    console.log(`calc hints ${this.cell}`);
+    // console.log(`calc hints ${this.cell}`);
     this.hints = new Array<number>(9);
     this.cell.hints.forEach((val, i, set) => this.hints[val - 1] = val);
   }

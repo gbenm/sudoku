@@ -10,12 +10,12 @@ describe('BoardService', () => {
     expect(service).toBeTruthy();
   });
 
-  // it('createBoard should create an valid board', () => {
+  // it('createBoard should create an completed board', () => {
   //   const service: BoardService = TestBed.get(BoardService);
   //   service.createBoard(0);
   //   console.log(service.current);
   //   expect(service.current).toBeTruthy();
-  //   expect(service.current.valid).toBeTruthy();
+  //   expect(service.current.completed).toBeTruthy();
   // });
 
   // it('createBoard should fill board correctly', () => {
@@ -23,7 +23,7 @@ describe('BoardService', () => {
   //   service.createBoard(5);
   //   console.log(service.current);
   //   expect(service.current).toBeTruthy();
-  //   expect(service.current.valid).toBeTruthy();
+  //   expect(service.current.completed).toBeTruthy();
   // });
 
 });
