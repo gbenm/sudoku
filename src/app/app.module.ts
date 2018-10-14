@@ -23,6 +23,8 @@ import {
 import {GameComponent} from './game/game.component';
 import {FormsModule} from '@angular/forms';
 import { GameCompletedDialogComponent } from './game-completed-dialog/game-completed-dialog.component';
+import { HomeComponent } from './home/home.component';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,8 @@ import { GameCompletedDialogComponent } from './game-completed-dialog/game-compl
     CellComponent,
     NavigationComponent,
     GameComponent,
-    GameCompletedDialogComponent
+    GameCompletedDialogComponent,
+    HomeComponent
   ],
   entryComponents: [
     GameCompletedDialogComponent
@@ -39,7 +42,7 @@ import { GameCompletedDialogComponent } from './game-completed-dialog/game-compl
   imports: [
     BrowserModule, BrowserAnimationsModule, LayoutModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule,
     MatListModule, MatTableModule, MatGridListModule, MatCardModule, MatBadgeModule, MatSlideToggleModule, FormsModule, MatSnackBarModule,
-    MatDialogModule, MatTooltipModule
+    MatDialogModule, MatTooltipModule, AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

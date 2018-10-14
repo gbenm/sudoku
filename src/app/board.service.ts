@@ -5,7 +5,10 @@ import {HelperService} from './helper.service';
 import {emptyCell, ReadonlyCell} from './cell';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {GameCompletedDialogComponent} from './game-completed-dialog/game-completed-dialog.component';
-import {PreferencesService} from './preferences.service';
+import {SettingsService} from './settings.service';
+import {Router} from '@angular/router';
+
+export const levels = {'easy': 0, 'medium': 1, 'hard': 2};
 
 @Injectable({
   providedIn: 'root'
@@ -20,30 +23,24 @@ export class BoardService {
   private _selected: ReadonlyCell;
   private _highlighted: Set<ReadonlyCell>;
   private _numbers: Map<number, Set<ReadonlyCell>>;
-  private _level = 0;
+  private _level = 'easy';
   private _solvable: boolean;
   private _moveCnt: number;
   private invalidCells: Set<ReadonlyCell>;
 
   constructor(private helper: HelperService, private snackBar: MatSnackBar, private dialog: MatDialog,
-              private preferences: PreferencesService) {
-    this.init(0);
-  }
-
-  private init(num: number) {
-    console.log(`generate`);
+              private settings: SettingsService, private router: Router) {
     Board.setHelper(this.helper);
-    this.createNewBoard();
-    this.boardObs = new BehaviorSubject<ReadonlyBoard>(this.board);
+    this.boardObs = new BehaviorSubject<ReadonlyBoard>(undefined);
     this.cellObs = new Map<string, BehaviorSubject<ReadonlyCell>>();
-    this.board.forEach(c => this.cellObs.set(c.key, new BehaviorSubject<ReadonlyCell>(c)));
   }
 
-  private createNewBoard() {
-    this._level = this.preferences.level;
+  private createNewBoard(level = this.settings.level) {
+    console.log(`create board level ${level}`);
+    this._level = level;
     this.board = new Board();
     this.board.generateSolution(true);
-    this.board.prepareBoardForGameplay(this._level);
+    this.board.prepareBoardForGameplay(levels[this._level]);
     this.history = [];
     this.historyPos = 0;
     this._selected = null;
@@ -60,13 +57,18 @@ export class BoardService {
         this._numbers.get(c.num).add(c);
       }
     });
+    this.board.forEach(c => this.cellObs.set(c.key, new BehaviorSubject<ReadonlyCell>(c)));
+  }
+
+  get boardExists(): boolean {
+    return !!this.board;
   }
 
   get solvable(): boolean {
     return this._solvable;
   }
 
-  get level(): number {
+  get level(): string {
     return this._level;
   }
 
@@ -142,7 +144,7 @@ export class BoardService {
   }
 
   private updateManualHints(num: number) {
-    if (this.preferences.manualHints) {
+    if (this.settings.manualHints) {
       this.board.iterateOverRelatedCells(this.selected, c => c.manualHints.delete(num));
     }
   }
@@ -170,7 +172,7 @@ export class BoardService {
     if (this.selected && this.selected.isEmpty()) {
       console.log(`set hint ${this.selected} ${num}`);
       this.pushMoveInHistory(['H', this.selected, num, null], skipHistory);
-      if (this.preferences.manualHints) {
+      if (this.settings.manualHints) {
         this.setManualHints(num);
       } else {
         this.board.setHint(this.selected, num);
@@ -236,8 +238,8 @@ export class BoardService {
     return this.cellObs.get(cell.key).asObservable();
   }
 
-  newBoard() {
-    this.createNewBoard();
+  newBoard(level = this.settings.level) {
+    this.createNewBoard(level);
     this.boardObs.next(this.board);
   }
 
@@ -275,6 +277,8 @@ export class BoardService {
       if (result) {
         this.newBoard();
       } else {
+        this.board = null;
+        this.router.navigate(['/home']);
       }
     });
   }

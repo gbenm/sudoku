@@ -1,4 +1,10 @@
 .game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-content {
   max-width: 33em;
 }
 
@@ -12,7 +18,7 @@
 }
 
 .game-toolbar-container {
-  margin-top: 1.5em;
+  margin: 1.5em 1em 0.5em 1em;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;

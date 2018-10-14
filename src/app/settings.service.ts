@@ -3,10 +3,10 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class PreferencesService {
+export class SettingsService {
 
   manualHints = false;
-  level = 0;
+  level = 'easy';
 
   constructor() { }
 }

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {BoardService} from '../board.service';
 import {HelperService} from '../helper.service';
 import {emptyCell} from '../cell';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-game',
@@ -12,10 +13,15 @@ export class GameComponent implements OnInit {
 
   buttonMode: boolean;
 
-  constructor(private boardService: BoardService, private helper: HelperService) {
+  constructor(private boardService: BoardService, private helper: HelperService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
+    const level = this.route.snapshot.paramMap.get('level');
+    console.log(level);
+    if (level || !this.boardService.boardExists) {
+      this.boardService.newBoard(level);
+    }
   }
 
   new() {
@@ -23,7 +29,8 @@ export class GameComponent implements OnInit {
   }
 
   replay() {
-    while (this.boardService.undo()) {}
+    while (this.boardService.undo()) {
+    }
   }
 
   undo() {
