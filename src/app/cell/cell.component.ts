@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {ReadonlyCell} from '../cell';
 import {BoardService} from '../board.service';
 import {HelperService} from '../helper.service';
+import {PreferencesService} from '../preferences.service';
 
 @Component({
   selector: 'app-cell',
@@ -13,7 +14,7 @@ export class CellComponent implements OnInit {
   @Input() cell: ReadonlyCell;
   hints: Array<number>;
 
-  constructor(private boardService: BoardService, private helper: HelperService) {
+  constructor(private boardService: BoardService, private helper: HelperService, private preferences: PreferencesService) {
   }
 
   ngOnInit() {
@@ -26,7 +27,8 @@ export class CellComponent implements OnInit {
   private calcHints() {
     // console.log(`calc hints ${this.cell}`);
     this.hints = new Array<number>(this.boardService.boardSize);
-    this.cell.hints.forEach((val) => this.hints[val - 1] = val);
+    const source = this.preferences.manualHints ? this.cell.manualHints : this.cell.hints;
+    source.forEach(h => this.hints[h - 1] = h);
   }
 
   get invalid(): boolean {

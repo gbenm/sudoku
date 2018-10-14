@@ -9,11 +9,14 @@ export interface ReadonlyCell {
   readonly valid: boolean;
   readonly modifiable: boolean;
   readonly key: string;
+  manualHints: Set<number>;
+
   isEmpty(): boolean;
 }
 
 export class Cell implements ReadonlyCell {
   k: number;
+  manualHints: Set<number> = new Set<number>();
 
   constructor(public readonly key: string, public readonly i: number, public readonly j: number,
               private _hints: Set<number> = new Set<number>(), public num: number = emptyCell,

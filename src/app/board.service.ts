@@ -5,6 +5,7 @@ import {HelperService} from './helper.service';
 import {emptyCell, ReadonlyCell} from './cell';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {GameCompletedDialogComponent} from './game-completed-dialog/game-completed-dialog.component';
+import {PreferencesService} from './preferences.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,8 @@ export class BoardService {
   private _moveCnt: number;
   private invalidCells: Set<ReadonlyCell>;
 
-  constructor(private helper: HelperService, private snackBar: MatSnackBar, private dialog: MatDialog) {
+  constructor(private helper: HelperService, private snackBar: MatSnackBar, private dialog: MatDialog,
+              private preferences: PreferencesService) {
     this.init(0);
   }
 
@@ -38,9 +40,10 @@ export class BoardService {
   }
 
   private createNewBoard() {
+    this._level = this.preferences.level;
     this.board = new Board();
     this.board.generateSolution(true);
-    this.board.prepareBoardForGameplay(this.level);
+    this.board.prepareBoardForGameplay(this._level);
     this.history = [];
     this.historyPos = 0;
     this._selected = null;
@@ -123,6 +126,7 @@ export class BoardService {
       this.updateNumbers(num);
       const valid = this.board.setNum(this.selected, num);
       this.updateInvalidCells(valid);
+      this.updateManualHints(num);
       this._moveCnt += num !== emptyCell ? -1 : 1;
       console.log(`set number ${this.selected} ${num} ${this._moveCnt}`);
       // hack to force highlights update
@@ -131,9 +135,15 @@ export class BoardService {
       this.selected = sel;
       this.cellObs.get(this.selected.key).next(this.selected);
       this._highlighted.forEach(c => this.cellObs.get(c.key).next(c));
-      if (this.isGameComplete()) {
+      if (this.checkForGameCompletion()) {
         this.gameCompleted();
       }
+    }
+  }
+
+  private updateManualHints(num: number) {
+    if (this.preferences.manualHints) {
+      this.board.iterateOverRelatedCells(this.selected, c => c.manualHints.delete(num));
     }
   }
 
@@ -160,7 +170,11 @@ export class BoardService {
     if (this.selected && this.selected.isEmpty()) {
       console.log(`set hint ${this.selected} ${num}`);
       this.pushMoveInHistory(['H', this.selected, num, null], skipHistory);
-      this.board.setHint(this.selected, num);
+      if (this.preferences.manualHints) {
+        this.setManualHints(num);
+      } else {
+        this.board.setHint(this.selected, num);
+      }
       this.cellObs.get(this.selected.key).next(this.selected);
     }
   }
@@ -249,7 +263,7 @@ export class BoardService {
     }
   }
 
-  private isGameComplete(): boolean {
+  private checkForGameCompletion(): boolean {
     return this.invalidCells.size === 0 && this._moveCnt === 0 && this._solvable;
   }
 
@@ -263,5 +277,13 @@ export class BoardService {
       } else {
       }
     });
+  }
+
+  private setManualHints(num: number) {
+    if (this.selected.manualHints.has(num)) {
+      this.selected.manualHints.delete(num);
+    } else {
+      this.selected.manualHints.add(num);
+    }
   }
 }
