@@ -1,7 +1,7 @@
 <div class="board-container">
   <table class="board">
     <tr *ngFor="let row of rows()">
-      <td *ngFor="let cell of cells(row)" [ngClass]="tdClass(cell)">
+      <td *ngFor="let cell of cells(row)" [ngClass]="tdClass(cell)" [class.invalid]="invalid()">
         <div class="board-cell">
           <app-cell [cell]="cell"></app-cell>
         </div>

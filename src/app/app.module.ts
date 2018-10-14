@@ -10,17 +10,19 @@ import {LayoutModule} from '@angular/cdk/layout';
 import {
   MatBadgeModule,
   MatButtonModule,
-  MatCardModule,
+  MatCardModule, MatDialogModule,
   MatGridListModule,
   MatIconModule,
   MatListModule,
   MatSidenavModule,
   MatSlideToggleModule,
+  MatSnackBarModule,
   MatTableModule,
   MatToolbarModule
 } from '@angular/material';
 import {GameComponent} from './game/game.component';
 import {FormsModule} from '@angular/forms';
+import { GameCompletedDialogComponent } from './game-completed-dialog/game-completed-dialog.component';
 
 @NgModule({
   declarations: [
@@ -28,11 +30,16 @@ import {FormsModule} from '@angular/forms';
     BoardComponent,
     CellComponent,
     NavigationComponent,
-    GameComponent
+    GameComponent,
+    GameCompletedDialogComponent
+  ],
+  entryComponents: [
+    GameCompletedDialogComponent
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule, LayoutModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule,
-    MatListModule, MatTableModule, MatGridListModule, MatCardModule, MatBadgeModule, MatSlideToggleModule, FormsModule
+    MatListModule, MatTableModule, MatGridListModule, MatCardModule, MatBadgeModule, MatSlideToggleModule, FormsModule, MatSnackBarModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

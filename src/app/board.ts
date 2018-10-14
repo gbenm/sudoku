@@ -6,7 +6,6 @@ const squareSize = 3;
 const boardSize = squareSize * 3;
 
 export interface ReadonlyBoard {
-  readonly completed: boolean;
   readonly size: number;
 
   getCell(i: number, j: number): ReadonlyCell;
@@ -16,18 +15,18 @@ class Stats {
   moves = 0;
   choiceRange: Array<number> = new Array<number>(boardSize + 1).fill(0);
   backMoves = 0;
+  remaining = 0;
 
   toString(): string {
-    return `{moves: ${this.moves}, backMoves=${this.backMoves}, choiceRange: [${this.choiceRange}]`;
+    return `{moves: ${this.moves}, backMoves: ${this.backMoves}, choiceRange: [${this.choiceRange}], remaining: ${this.remaining}`;
   }
 }
 
 export class Board implements ReadonlyBoard {
 
   private static helper: HelperService;
-  private static levels: Array<[number, number, number]> = [[40, 4, 1.6], [50, 3, 1.6], [62, 2, 1.8]];
+  private static levels: Array<[number, number, number]> = [[5, 4, 1.6], [50, 3, 1.6], [62, 2, 1.8]];
 
-  private _completed: boolean;
   private cells: Map<string, Cell>;
   stats: Stats;
 
@@ -39,16 +38,12 @@ export class Board implements ReadonlyBoard {
     return boardSize;
   }
 
-  get completed(): boolean {
-    return this._completed;
-  }
-
   static setHelper(helper: HelperService) {
     Board.helper = helper;
   }
 
-  setNum(cell: ReadonlyCell, num: number) {
-    this.setNumber(cell as Cell, num);
+  setNum(cell: ReadonlyCell, num: number): boolean {
+    return this.setNumber(cell as Cell, num);
   }
 
   private setNumber(cell: Cell, num: number): boolean {
@@ -115,7 +110,6 @@ export class Board implements ReadonlyBoard {
         this.set(key, empty ? c : new Cell(key, i, j, new Set<number>(c.hints), c.num, c.valid, c.modifiable));
       }
     }
-    this._completed = !empty && board.completed;
   }
 
   private set(key: string, cell: Cell) {
@@ -164,10 +158,6 @@ export class Board implements ReadonlyBoard {
     this.cells.forEach(c => callback(c));
   }
 
-  cellList(): Array<ReadonlyCell> {
-    return Array.from(this.cells.values());
-  }
-
   private generateSolutionRecursive(keys: Array<string>): boolean {
     if (keys.length > 0) {
       // order keys to have the cells with minimum number of hints first
@@ -182,10 +172,10 @@ export class Board implements ReadonlyBoard {
       while (hints.length) {
         const num = hints.shift();
         assert(this.setNumber(cell, num));
-        this.generateSolutionRecursive(keys);
+        const res = this.generateSolutionRecursive(keys);
         this.stats.moves++;
         // console.log(`${this._completed} [${keys.length}] ${key} => ${num} hints [${hints}]`);
-        if (this.completed) {
+        if (res) {
           return true;
         }
         this.stats.backMoves++;
@@ -193,8 +183,7 @@ export class Board implements ReadonlyBoard {
       }
       keys.unshift(key);
     }
-    this._completed = keys.length === 0;
-    return this.completed;
+    return keys.length === 0;
   }
 
   generateSolution(fromScratch: boolean): boolean {
@@ -220,7 +209,7 @@ export class Board implements ReadonlyBoard {
     // assign a random value to cell.k to randomly select rowHints with same hint size
     keys.forEach((key, i) => this.get(key).k = i);
     const res = this.generateSolutionRecursive(keys);
-    console.log(`STATS ${this.stats}`);
+    console.log(`STATS ${res} ${this.stats}`);
     return res;
   }
 
@@ -236,7 +225,6 @@ export class Board implements ReadonlyBoard {
     }
     cells.forEach((c) => numMap.get(c.num).push(c));
 
-    const nums = [];
     const boxCnt = new Array<number>(this.size).fill(this.size);
     let cnt = 0;
     while (cells.length && cnt < minCnt) {
@@ -249,9 +237,9 @@ export class Board implements ReadonlyBoard {
         arr.splice(arr.indexOf(c), 1);
         this.setNumber(c, emptyCell);
         c.modifiable = true;
-        console.log(`removed ${c}`);
       }
     }
+    this.stats.remaining = cnt;
     console.log(`removed ${cnt} numbers`);
   }
 
@@ -279,7 +267,7 @@ export class Board implements ReadonlyBoard {
         cnt++;
       }
     }
-    console.log(`dist ${c} = ${dist / cnt} [${arr}]`);
+    // console.log(`dist ${c} = ${dist / cnt} [${arr}]`);
     return (dist / cnt) < minDist;
   }
 

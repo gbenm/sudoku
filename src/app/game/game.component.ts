@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {BoardService} from '../board.service';
 import {HelperService} from '../helper.service';
 import {emptyCell} from '../cell';
@@ -45,7 +45,7 @@ export class GameComponent implements OnInit {
   }
 
   verify() {
-    this.boardService.verify();
+    this.boardService.isSolvable();
   }
 
   buttons(): Array<number> {
@@ -89,9 +89,5 @@ export class GameComponent implements OnInit {
     console.log(`button unset number`);
     this.boardService.setNumber(emptyCell);
   }
-
-  // setHint(num: number) {
-  //   this.boardService.setHint(num);
-  // }
 
 }

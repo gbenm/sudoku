@@ -1,7 +1,7 @@
-import {Component, Input, OnChanges, OnInit} from '@angular/core';
-import {Board, ReadonlyBoard} from '../board';
+import {Component, Input, OnInit} from '@angular/core';
+import {ReadonlyBoard} from '../board';
 import {BoardService} from '../board.service';
-import {Cell, ReadonlyCell} from '../cell';
+import {ReadonlyCell} from '../cell';
 import {HelperService} from '../helper.service';
 
 @Component({
@@ -41,4 +41,7 @@ export class BoardComponent implements OnInit {
     return `board-${cell.i === this.boardService.boardSize - 1 ? 'bottom' : vert[cell.i % 3]}-${cell.j === 0 ? 'left' : hor[cell.j % 3]}`;
   }
 
+  invalid(): boolean {
+    return !this.boardService.solvable;
+  }
 }

@@ -3,6 +3,8 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {Board, ReadonlyBoard} from './board';
 import {HelperService} from './helper.service';
 import {emptyCell, ReadonlyCell} from './cell';
+import {MatDialog, MatSnackBar} from '@angular/material';
+import {GameCompletedDialogComponent} from './game-completed-dialog/game-completed-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -18,9 +20,11 @@ export class BoardService {
   private _highlighted: Set<ReadonlyCell>;
   private _numbers: Map<number, Set<ReadonlyCell>>;
   private _level = 0;
+  private _solvable: boolean;
+  private _moveCnt: number;
+  private invalidCells: Set<ReadonlyCell>;
 
-
-  constructor(private helper: HelperService) {
+  constructor(private helper: HelperService, private snackBar: MatSnackBar, private dialog: MatDialog) {
     this.init(0);
   }
 
@@ -37,9 +41,12 @@ export class BoardService {
     this.board = new Board();
     this.board.generateSolution(true);
     this.board.prepareBoardForGameplay(this.level);
-    this.history = new Array<[string, ReadonlyCell, number, number]>();
+    this.history = [];
     this.historyPos = 0;
     this._selected = null;
+    this._solvable = true;
+    this._moveCnt = this.board.stats.remaining;
+    this.invalidCells = new Set<ReadonlyCell>();
     this._highlighted = new Set<ReadonlyCell>();
     this._numbers = new Map<number, Set<ReadonlyCell>>();
     for (let i = 1; i <= this.boardSize; i++) {
@@ -50,6 +57,10 @@ export class BoardService {
         this._numbers.get(c.num).add(c);
       }
     });
+  }
+
+  get solvable(): boolean {
+    return this._solvable;
   }
 
   get level(): number {
@@ -107,22 +118,41 @@ export class BoardService {
   }
 
   setNumber(num: number, skipHistory = false) {
-    if (num !== this.selected.num) {
-      console.log(`set number ${this.selected} ${num}`);
+    if (this.selected && num !== this.selected.num) {
       this.pushMoveInHistory(['N', this.selected, this.selected.num, num], skipHistory);
-      if (!this._selected.isEmpty()) {
-        this._numbers.get(this._selected.num).delete(this._selected);
-      }
-      if (num !== emptyCell) {
-        this._numbers.get(num).add(this._selected);
-      }
-      this.board.setNum(this.selected, num);
+      this.updateNumbers(num);
+      const valid = this.board.setNum(this.selected, num);
+      this.updateInvalidCells(valid);
+      this._moveCnt += num !== emptyCell ? -1 : 1;
+      console.log(`set number ${this.selected} ${num} ${this._moveCnt}`);
       // hack to force highlights update
-      const sel = this.selected;
+      const sel = this._selected;
       this.selected = null;
       this.selected = sel;
       this.cellObs.get(this.selected.key).next(this.selected);
       this._highlighted.forEach(c => this.cellObs.get(c.key).next(c));
+      if (this.isGameComplete()) {
+        this.gameCompleted();
+      }
+    }
+  }
+
+  private updateInvalidCells(valid) {
+    if (valid || this.selected.isEmpty()) {
+      if (this.invalidCells.has(this.selected)) {
+        this.invalidCells.delete(this.selected);
+      }
+    } else {
+      this.invalidCells.add(this.selected);
+    }
+  }
+
+  private updateNumbers(num: number) {
+    if (!this._selected.isEmpty()) {
+      this._numbers.get(this._selected.num).delete(this._selected);
+    }
+    if (num !== emptyCell) {
+      this._numbers.get(num).add(this._selected);
     }
   }
 
@@ -197,8 +227,41 @@ export class BoardService {
     this.boardObs.next(this.board);
   }
 
-  verify() {
-    const b = new Board(this.board);
-    b.generateSolution(false);
+  isSolvable() {
+    if (this.invalidCells.size === 0) {
+      const b = new Board(this.board);
+      this._solvable = b.generateSolution(false);
+      if (!this._solvable) {
+        // TODO define a better action for snackbar
+        const snackBarRef = this.snackBar.open('The board is not solvable! Check again after correction', 'Undo last move',
+          {duration: 15000});
+        snackBarRef.onAction().subscribe(() => this.undo());
+      }
+    } else {
+      const snackBarRef = this.snackBar.open('The board is not correct! First fix invalid cells', 'Clear all invalid cells',
+        {duration: 15000});
+      snackBarRef.onAction().subscribe(() => {
+        while (this.invalidCells.size > 0) {
+          this.selected = this.invalidCells.values().next().value;
+          this.setNumber(emptyCell);
+        }
+      });
+    }
+  }
+
+  private isGameComplete(): boolean {
+    return this.invalidCells.size === 0 && this._moveCnt === 0 && this._solvable;
+  }
+
+  private gameCompleted() {
+    console.log(`game completed`);
+    const gameCompleted = this.dialog.open(GameCompletedDialogComponent);
+    gameCompleted.afterClosed().subscribe(result => {
+      console.log(`result ${result}`);
+      if (result) {
+        this.newBoard();
+      } else {
+      }
+    });
   }
 }
