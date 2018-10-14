@@ -18,7 +18,7 @@ import {
   MatSlideToggleModule,
   MatSnackBarModule,
   MatTableModule,
-  MatToolbarModule
+  MatToolbarModule, MatTooltipModule
 } from '@angular/material';
 import {GameComponent} from './game/game.component';
 import {FormsModule} from '@angular/forms';
@@ -39,7 +39,7 @@ import { GameCompletedDialogComponent } from './game-completed-dialog/game-compl
   imports: [
     BrowserModule, BrowserAnimationsModule, LayoutModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule,
     MatListModule, MatTableModule, MatGridListModule, MatCardModule, MatBadgeModule, MatSlideToggleModule, FormsModule, MatSnackBarModule,
-    MatDialogModule
+    MatDialogModule, MatTooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]

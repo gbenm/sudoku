@@ -1,4 +1,3 @@
-<!--<app-navigation></app-navigation>-->
 <div class="game-container">
 
   <div class="game-main-toolbar-container">
@@ -9,17 +8,10 @@
       <button mat-icon-button [disabled]="undoDisabled()" (click)="replay()">
         <mat-icon aria-label="Replay game">replay</mat-icon>
       </button>
-      <button mat-icon-button (click)="verify()">
-        <mat-icon aria-label="New Game">build</mat-icon>
-      </button>
       <span class="filler"></span>
     </mat-toolbar>
   </div>
-  <!-- Add Content Here -->
-  <!--<mat-toolbar>-->
-  <!--<mat-toolbar-row>-->
-  <!--</mat-toolbar-row>-->
-  <!--</mat-toolbar>-->
+
   <div class="game-board-container">
     <app-board></app-board>
   </div>
@@ -29,8 +21,12 @@
     <div class="game-toolbar-left-container">
 
       <div class="game-toolbar-button" *ngFor="let b of buttons()">
-        <button mat-mini-fab (click)="buttonClicked(b)" color=""
-                [matBadge]="numbers(b)" matBadgeColor="{{numbersAvailable(b) ? '' : 'accent'}}"
+        <button
+          mat-mini-fab
+          (click)="buttonClicked(b)"
+          color=""
+          [matBadge]="numbers(b)"
+          matBadgeColor="{{numbersAvailable(b) ? '' : 'accent'}}"
         >{{b}}
         </button>
       </div>
@@ -40,13 +36,27 @@
     <div class="game-toolbar-right-container">
 
       <div class="game-toolbar-button">
-        <button mat-mini-fab (click)="undo()" [disabled]="undoDisabled()" color="">
+        <button
+          mat-mini-fab
+          (click)="undo()"
+          [disabled]="undoDisabled()"
+          color=""
+          matTooltip="Undo last operation"
+          aria-label="Undo last operation"
+        >
           <mat-icon>undo</mat-icon>
         </button>
       </div>
 
       <div class="game-toolbar-button">
-        <button mat-mini-fab (click)="redo()" [disabled]="redoDisabled()" color="">
+        <button
+          mat-mini-fab
+          (click)="redo()"
+          [disabled]="redoDisabled()"
+          color=""
+          matTooltip="Redo last operation"
+          aria-label="Redo last operation"
+        >
           <mat-icon>redo</mat-icon>
         </button>
       </div>
@@ -55,6 +65,8 @@
         <mat-slide-toggle
           color="accent"
           [(ngModel)]="buttonMode"
+          matTooltip="Toggle input mode to insert numbers or hints inside currently selected cell"
+          aria-label="Toggle input buttons mode to insert numbers or hints inside currently selected cell"
         >
         </mat-slide-toggle>
       </div>
@@ -62,14 +74,27 @@
       <div class="game-toolbar-button"></div>
 
       <div class="game-toolbar-button">
-        <button mat-mini-fab (click)="unsetNumber()" [disabled]="unsetNumberDisabled()" color="">
+        <button
+          mat-mini-fab
+          (click)="unsetNumber()"
+          [disabled]="unsetNumberDisabled()"
+          color=""
+          matTooltip="Clear selected cell"
+          aria-label="Clear selected cell"
+        >
           <mat-icon>delete</mat-icon>
         </button>
       </div>
 
       <div class="game-toolbar-button">
-        <button mat-mini-fab (click)="verify()" color="">
-          <mat-icon>assessment</mat-icon>
+        <button
+          mat-mini-fab
+          (click)="verify()"
+          color=""
+          matTooltip="Check for solvability"
+          aria-label="Check if current game configuration is still solvable"
+        >
+          <mat-icon>build</mat-icon>
         </button>
       </div>
 
