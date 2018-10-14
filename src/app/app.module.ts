@@ -25,6 +25,7 @@ import {FormsModule} from '@angular/forms';
 import { GameCompletedDialogComponent } from './game-completed-dialog/game-completed-dialog.component';
 import { HomeComponent } from './home/home.component';
 import { AppRoutingModule } from './app-routing.module';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { AppRoutingModule } from './app-routing.module';
     NavigationComponent,
     GameComponent,
     GameCompletedDialogComponent,
-    HomeComponent
+    HomeComponent,
+    SettingsComponent
   ],
   entryComponents: [
     GameCompletedDialogComponent

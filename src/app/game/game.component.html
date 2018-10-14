@@ -7,15 +7,21 @@
         <button mat-icon-button (click)="new()">
           <mat-icon aria-label="New Game">playlist_play</mat-icon>
         </button>
+
+        <button mat-icon-button routerLink="/home">
+          <mat-icon aria-label="Home">home</mat-icon>
+        </button>
+
+        <button mat-icon-button routerLink="/settings">
+          <mat-icon aria-label="Settings">settings</mat-icon>
+        </button>
+
         <button mat-icon-button [disabled]="undoDisabled()" (click)="replay()">
           <mat-icon aria-label="Replay game">replay</mat-icon>
         </button>
 
-        <button mat-icon-button routerLink="/">
-          <mat-icon aria-label="Home">home</mat-icon>
-        </button>
-
         <span class="filler"></span>
+
       </mat-toolbar>
     </div>
 

@@ -1,0 +1,22 @@
+.settings-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.settings-content {
+  max-width: 40em;
+  padding: 5% 10% 5% 10%;
+  height: 90%;
+  width: 80%;
+  text-align: center;
+  display: grid;
+  align-items: center;
+  grid-template-rows: 20% 20% 48% 12%;
+}
+
+.settings-back {
+  text-align: right;
+}
