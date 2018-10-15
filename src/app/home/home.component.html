@@ -1,12 +1,20 @@
 <div class="home-container">
   <div class="home-content">
 
-    <div>
+    <div class="mat-h1">
       <h1>Sudoku</h1>
     </div>
 
-    <div *ngFor="let level of ['Easy', 'Medium', 'Hard']">
-      <button mat-button [class.selected]="isLevel(level.toLowerCase() | lowercase)" (click)="setLevel(level.toLowerCase())"><h2>{{level}}</h2></button>
+    <div>
+      <button mat-button [class.selected]="isLevel('easy')" (click)="setLevel('easy')"><h2>Easy</h2></button>
+    </div>
+
+    <div>
+      <button mat-button [class.selected]="isLevel('medium')" (click)="setLevel('medium')"><h2>Medium</h2></button>
+    </div>
+
+    <div>
+      <button mat-button [class.selected]="isLevel('hard')" (click)="setLevel('hard')"><h2>Hard</h2></button>
     </div>
 
     <div>

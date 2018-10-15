@@ -1,12 +1,24 @@
-<div class="settings-container">
+<div class="settings-container mat-subheading-1">
   <div class="settings-content">
 
-    <div>
+    <div class="settings-heading mat-h1">
       <h1>Settings</h1>
     </div>
 
-    <div>
-      <mat-slide-toggle color="primary" [(ngModel)]="manualHints"  ><h3>Hints are manually managed</h3></mat-slide-toggle>
+    <div class="settings-item">
+      <mat-slide-toggle [(ngModel)]="manualHints">
+        <span class="mat-subheading-1">Hints are manually managed</span>
+      </mat-slide-toggle>
+    </div>
+
+    <div class="settings-item">
+      Theme
+      <mat-radio-group [(ngModel)]="theme" class="settings-theme">
+        <mat-radio-button value="theme" class="settings-theme-radio-button" >Indigo - Pink</mat-radio-button>
+        <mat-radio-button value="deeppurple-amber-theme" class="settings-theme-radio-button" >Deep purple - Amber</mat-radio-button>
+        <mat-radio-button value="pink-bluegrey-theme" class="settings-theme-radio-button" >Pink - Blue grey</mat-radio-button>
+        <mat-radio-button value="purple-green-theme" class="settings-theme-radio-button" >Purple - Green</mat-radio-button>
+      </mat-radio-group>
     </div>
 
     <div></div>

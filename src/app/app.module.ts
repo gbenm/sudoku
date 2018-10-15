@@ -13,7 +13,7 @@ import {
   MatCardModule, MatDialogModule,
   MatGridListModule,
   MatIconModule,
-  MatListModule,
+  MatListModule, MatRadioModule,
   MatSidenavModule,
   MatSlideToggleModule,
   MatSnackBarModule,
@@ -26,6 +26,7 @@ import { GameCompletedDialogComponent } from './game-completed-dialog/game-compl
 import { HomeComponent } from './home/home.component';
 import { AppRoutingModule } from './app-routing.module';
 import { SettingsComponent } from './settings/settings.component';
+import {OverlayModule} from '@angular/cdk/overlay';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,7 @@ import { SettingsComponent } from './settings/settings.component';
   imports: [
     BrowserModule, BrowserAnimationsModule, LayoutModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule,
     MatListModule, MatTableModule, MatGridListModule, MatCardModule, MatBadgeModule, MatSlideToggleModule, FormsModule, MatSnackBarModule,
-    MatDialogModule, MatTooltipModule, AppRoutingModule
+    MatDialogModule, MatTooltipModule, OverlayModule, MatRadioModule, AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

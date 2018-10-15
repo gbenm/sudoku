@@ -5,15 +5,45 @@
 
 @include mat-core();
 
+// Indigo-pink
 $primary: mat-palette($mat-indigo);
 $accent: mat-palette($mat-pink, A200, A100, A400);
 $warn: mat-palette($mat-red);
-$hint: mat-palette($mat-green);
+$secondary: mat-palette($mat-grey);
 
-$theme: mat-light-theme($primary, $accent, $warn);
+$theme: mat-light-theme($primary, $accent);
 
 @include angular-material-theme($theme);
 @include cell-theme($theme);
+
+// Deep purple - orange light theme
+$deeppurple-amber-primary: mat-palette($mat-deep-purple);
+$deeppurple-amber-accent:  mat-palette($mat-amber, A200, A100, A400);
+$deeppurle-amber-theme: mat-light-theme($deeppurple-amber-primary, $deeppurple-amber-accent);
+.deeppurple-amber-theme {
+  @include angular-material-theme($deeppurle-amber-theme);
+  @include cell-theme($deeppurle-amber-theme);
+}
+
+// Pink - bluegrey
+$pink-bluegrey-primary: mat-palette($mat-pink, 700, 500, 900);
+$pink-bluegrey-accent:  mat-palette($mat-blue-grey, A200, A100, A400);
+$pink-bluegrey-theme: mat-dark-theme($pink-bluegrey-primary, $pink-bluegrey-accent);
+.pink-bluegrey-theme {
+  @include angular-material-theme($pink-bluegrey-theme);
+  @include cell-theme($pink-bluegrey-theme);
+}
+
+// Purple - green
+$purple-green-primary: mat-palette($mat-purple, 700, 500, 800);
+$purple-green-accent:  mat-palette($mat-green, A200, A100, A400);
+$purple-green-theme: mat-dark-theme($primary, $accent);
+.purple-green-theme {
+  @include angular-material-theme($purple-green-theme);
+  @include cell-theme($purple-green-theme);
+}
+
+
 
 html, body { height: 100%; }
 body { margin: 0; font-family: 'Roboto', sans-serif; }

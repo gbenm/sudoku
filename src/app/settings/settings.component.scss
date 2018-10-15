@@ -3,7 +3,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  //align-items: center;
 }
 
 .settings-content {
@@ -11,10 +11,23 @@
   padding: 5% 10% 5% 10%;
   height: 90%;
   width: 80%;
-  text-align: center;
+  //text-align: center;
   display: grid;
   align-items: center;
-  grid-template-rows: 20% 20% 48% 12%;
+  grid-template-rows: 20% 15% 15% 38% 12%;
+}
+
+.settings-heading {
+  text-align: center;
+}
+
+.settings-theme {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.settings-theme-radio-button {
+  margin: 5px;
 }
 
 .settings-back {
