@@ -26,8 +26,11 @@ export class GameComponent implements OnInit, OnDestroy {
     console.log(level);
     if (level || !this.boardService.boardExists) {
       this.boardService.newBoard(level);
+      // TODO hack to avoid back from settings to destroy current game
+      if (level) {
+        this.router.navigate(['/game']);
+      }
     }
-    console.log('subscribe');
     this.subscriptions = [];
     this.subscriptions.push(this.boardService.getHintAvailable().subscribe(c => this.showHint(c)));
     this.subscriptions.push(this.boardService.getGameCompleted().subscribe(() => this.gameCompleted()));
@@ -70,7 +73,6 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   buttons(): Array<number> {
-    console.log(`buttons`);
     return this.helper.progr(this.boardService.boardSize, 1);
   }
 
@@ -126,7 +128,7 @@ export class GameComponent implements OnInit, OnDestroy {
       });
     } else {
       this.snackBar.open('The board contains some errors. Resolve them first!',
-        null, {duration: 30000});
+        'Got it', {duration: 30000});
     }
   }
 
@@ -146,7 +148,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   private solvableCheck(res: [boolean, boolean]) {
     if (!res[1]) {
-      const snackBarRef = this.snackBar.open('The board is not correct! First fix invalid cells', 'Clear all invalid cells',
+      const snackBarRef = this.snackBar.open('The board is not correct! Try clearing all invalid cells', 'Clear all invalid cells',
         {duration: 30000});
       snackBarRef.onAction().subscribe(() => {
         this.boardService.clearInvalidCells();
@@ -157,7 +159,7 @@ export class GameComponent implements OnInit, OnDestroy {
         {duration: 30000});
       snackBarRef.onAction().subscribe(() => this.undo());
     } else {
-      this.snackBar.open('The board is solvable!', null, {duration: 30000});
+      const snackBarRef = this.snackBar.open('The board is solvable!', 'Got it', {duration: 30000});
     }
   }
 

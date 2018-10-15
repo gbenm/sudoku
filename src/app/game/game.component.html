@@ -2,28 +2,28 @@
 
   <div class="game-content">
 
-    <div class="game-main-toolbar-container">
-      <mat-toolbar>
-        <button mat-icon-button (click)="new()">
-          <mat-icon aria-label="New Game">playlist_play</mat-icon>
-        </button>
+    <!--<div class="game-main-toolbar-container">-->
+      <!--<mat-toolbar>-->
+        <!--<button mat-icon-button (click)="new()">-->
+          <!--<mat-icon aria-label="New Game">playlist_play</mat-icon>-->
+        <!--</button>-->
 
-        <button mat-icon-button routerLink="/home">
-          <mat-icon aria-label="Home">home</mat-icon>
-        </button>
+        <!--<button mat-icon-button routerLink="/home">-->
+          <!--<mat-icon aria-label="Home">home</mat-icon>-->
+        <!--</button>-->
 
-        <button mat-icon-button routerLink="/settings">
-          <mat-icon aria-label="Settings">settings</mat-icon>
-        </button>
+        <!--<button mat-icon-button routerLink="/settings">-->
+          <!--<mat-icon aria-label="Settings">settings</mat-icon>-->
+        <!--</button>-->
 
-        <button mat-icon-button [disabled]="undoDisabled()" (click)="replay()">
-          <mat-icon aria-label="Replay game">replay</mat-icon>
-        </button>
+        <!--<button mat-icon-button [disabled]="undoDisabled()" (click)="replay()">-->
+          <!--<mat-icon aria-label="Replay game">replay</mat-icon>-->
+        <!--</button>-->
 
-        <span class="filler"></span>
+        <!--<span class="filler"></span>-->
 
-      </mat-toolbar>
-    </div>
+      <!--</mat-toolbar>-->
+    <!--</div>-->
 
     <div class="game-board-container">
       <app-board></app-board>
@@ -74,6 +74,8 @@
           </button>
         </div>
 
+        <div></div>
+
         <div class="game-toolbar-button">
           <mat-slide-toggle
             color="accent"
@@ -99,6 +101,18 @@
         <div class="game-toolbar-button">
           <button
             mat-mini-fab
+            routerLink="/home"
+            color=""
+            matTooltip="Return to home"
+            aria-label="Return to home"
+          >
+            <mat-icon>home</mat-icon>
+          </button>
+        </div>
+
+        <div class="game-toolbar-button">
+          <button
+            mat-mini-fab
             (click)="unsetNumber()"
             [disabled]="unsetNumberDisabled()"
             color=""
@@ -118,6 +132,18 @@
             aria-label="Check if current game configuration is still solvable"
           >
             <mat-icon>build</mat-icon>
+          </button>
+        </div>
+
+        <div class="game-toolbar-button">
+          <button
+            mat-mini-fab
+            routerLink="/settings"
+            color=""
+            matTooltip="Settings"
+            aria-label="Settings"
+          >
+            <mat-icon>settings</mat-icon>
           </button>
         </div>
 
