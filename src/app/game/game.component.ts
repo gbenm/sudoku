@@ -1,19 +1,24 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BoardService} from '../board.service';
 import {HelperService} from '../helper.service';
-import {emptyCell} from '../cell';
-import {ActivatedRoute} from '@angular/router';
+import {emptyCell, ReadonlyCell} from '../cell';
+import {ActivatedRoute, Router} from '@angular/router';
+import {MatDialog, MatSnackBar} from '@angular/material';
+import {GameCompletedDialogComponent} from '../game-completed-dialog/game-completed-dialog.component';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnInit, OnDestroy {
 
   buttonMode: boolean;
+  private subscriptions: Array<Subscription>;
 
-  constructor(private boardService: BoardService, private helper: HelperService, private route: ActivatedRoute) {
+  constructor(private boardService: BoardService, private helper: HelperService, private route: ActivatedRoute,
+              private snackBar: MatSnackBar, private dialog: MatDialog, private router: Router) {
   }
 
   ngOnInit() {
@@ -22,6 +27,15 @@ export class GameComponent implements OnInit {
     if (level || !this.boardService.boardExists) {
       this.boardService.newBoard(level);
     }
+    console.log('subscribe');
+    this.subscriptions = [];
+    this.subscriptions.push(this.boardService.getHintAvailable().subscribe(c => this.showHint(c)));
+    this.subscriptions.push(this.boardService.getGameCompleted().subscribe(() => this.gameCompleted()));
+    this.subscriptions.push(this.boardService.getBoardSolvableCheck().subscribe((res) => this.solvableCheck(res)));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   new() {
@@ -52,7 +66,7 @@ export class GameComponent implements OnInit {
   }
 
   verify() {
-    this.boardService.isSolvable();
+    this.boardService.checkForSolvability();
   }
 
   buttons(): Array<number> {
@@ -76,7 +90,7 @@ export class GameComponent implements OnInit {
   // }
 
   unsetNumberDisabled(): boolean {
-    return !this.boardService.selected || this.boardService.selected.isEmpty() || !this.boardService.selected.modifiable;
+    return !this.boardService.selected || this.boardService.selected.isEmpty() || !this.boardService.selected.modifiable || this.buttonMode;
   }
 
   numbers(num: number): number {
@@ -87,14 +101,64 @@ export class GameComponent implements OnInit {
     return this.numbers(num) < this.boardService.boardSize;
   }
 
-  // setNumber(num: number) {
-  //   console.log(`button set number ${num}`);
-  //   this.boardService.setNumber(num);
-  // }
-
   unsetNumber() {
     console.log(`button unset number`);
     this.boardService.setNumber(emptyCell);
+  }
+
+  hint() {
+    this.boardService.calculateHint();
+  }
+
+  private showHint(c: ReadonlyCell) {
+    if (c && c.hints.size) {
+      this.boardService.selected = c;
+      const num = c.hints.values().next().value;
+      const numMsg = c.hints.size > 1 ? `numbers ${c.hints}` : `number ${num}`;
+      const snackBarRef = this.snackBar.open(`The ${numMsg} can be set in position (${c.i + 1}, ${c.j + 1})`, 'Set number',
+        {duration: 30000});
+      snackBarRef.onAction().subscribe(() => {
+        console.log(`execute hint ${num}`);
+        if (this.boardService.selected !== c) {
+          this.boardService.selected = c;
+        }
+        this.boardService.setNumber(num);
+      });
+    } else {
+      this.snackBar.open('The board contains some errors. Resolve them first!',
+        null, {duration: 30000});
+    }
+  }
+
+  private gameCompleted() {
+    console.log(`game completed`);
+    const dialog = this.dialog.open(GameCompletedDialogComponent);
+    dialog.afterClosed().subscribe(result => {
+      console.log(`result ${result}`);
+      if (result) {
+        this.boardService.newBoard();
+      } else {
+        this.boardService.clearBoard();
+        this.router.navigate(['/home']);
+      }
+    });
+  }
+
+  private solvableCheck(res: [boolean, boolean]) {
+    if (!res[1]) {
+      const snackBarRef = this.snackBar.open('The board is not correct! First fix invalid cells', 'Clear all invalid cells',
+        {duration: 30000});
+      snackBarRef.onAction().subscribe(() => {
+        this.boardService.clearInvalidCells();
+      });
+    } else if (!res[0]) {
+      // TODO define a better action for snackbar
+      const snackBarRef = this.snackBar.open('The board is not solvable! Check again after correction', 'Undo last move',
+        {duration: 30000});
+      snackBarRef.onAction().subscribe(() => this.undo());
+    } else {
+      this.snackBar.open('The board is solvable!', null, {duration: 30000});
+    }
   }
 
 }

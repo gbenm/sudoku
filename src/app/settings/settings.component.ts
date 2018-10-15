@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {SettingsService} from '../settings.service';
-import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
 
 @Component({
@@ -10,7 +9,7 @@ import {Location} from '@angular/common';
 })
 export class SettingsComponent implements OnInit {
 
-  constructor(private settings: SettingsService, private route: ActivatedRoute, private location: Location) { }
+  constructor(private settings: SettingsService, private location: Location) { }
 
   ngOnInit() {
   }

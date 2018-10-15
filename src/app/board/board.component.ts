@@ -1,25 +1,31 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ReadonlyBoard} from '../board';
 import {BoardService} from '../board.service';
 import {ReadonlyCell} from '../cell';
 import {HelperService} from '../helper.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss']
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, OnDestroy {
 
   @Input() board: ReadonlyBoard;
+  private subscription: Subscription;
 
   constructor(private boardService: BoardService, private helper: HelperService) {
   }
 
   ngOnInit() {
-    this.boardService.getBoard().subscribe((board) => {
+    this.subscription = this.boardService.getBoard().subscribe((board) => {
       this.board = board;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   rows(): Array<number> {

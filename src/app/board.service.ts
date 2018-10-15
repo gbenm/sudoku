@@ -1,12 +1,9 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Board, ReadonlyBoard} from './board';
 import {HelperService} from './helper.service';
 import {emptyCell, ReadonlyCell} from './cell';
-import {MatDialog, MatSnackBar} from '@angular/material';
-import {GameCompletedDialogComponent} from './game-completed-dialog/game-completed-dialog.component';
 import {SettingsService} from './settings.service';
-import {Router} from '@angular/router';
 
 export const levels = {'easy': 0, 'medium': 1, 'hard': 2};
 
@@ -27,12 +24,19 @@ export class BoardService {
   private _solvable: boolean;
   private _moveCnt: number;
   private invalidCells: Set<ReadonlyCell>;
+  private gameCompleted: Subject<void>;
+  private boardSolvableCheck: Subject<[boolean, boolean]>;
+  private hintAvailable: Subject<ReadonlyCell>;
+  private boardIncorrect: Subject<Set<ReadonlyCell>>;
 
-  constructor(private helper: HelperService, private snackBar: MatSnackBar, private dialog: MatDialog,
-              private settings: SettingsService, private router: Router) {
+  constructor(private helper: HelperService, private settings: SettingsService) {
     Board.setHelper(this.helper);
     this.boardObs = new BehaviorSubject<ReadonlyBoard>(undefined);
     this.cellObs = new Map<string, BehaviorSubject<ReadonlyCell>>();
+    this.gameCompleted = new Subject<void>();
+    this.boardSolvableCheck = new Subject<[boolean, boolean]>();
+    this.hintAvailable = new Subject<ReadonlyCell>();
+    this.boardIncorrect = new Subject<Set<ReadonlyCell>>();
   }
 
   private createNewBoard(level = this.settings.level) {
@@ -137,9 +141,7 @@ export class BoardService {
       this.selected = sel;
       this.cellObs.get(this.selected.key).next(this.selected);
       this._highlighted.forEach(c => this.cellObs.get(c.key).next(c));
-      if (this.checkForGameCompletion()) {
-        this.gameCompleted();
-      }
+      this.checkForGameCompletion();
     }
   }
 
@@ -238,49 +240,40 @@ export class BoardService {
     return this.cellObs.get(cell.key).asObservable();
   }
 
+  getHintAvailable(): Observable<ReadonlyCell> {
+    return this.hintAvailable.asObservable();
+  }
+
+  getGameCompleted(): Observable<void> {
+    return this.gameCompleted.asObservable();
+  }
+
+  getBoardSolvableCheck(): Observable<[boolean, boolean]> {
+    return this.boardSolvableCheck.asObservable();
+  }
+
   newBoard(level = this.settings.level) {
     this.createNewBoard(level);
     this.boardObs.next(this.board);
   }
 
-  isSolvable() {
-    if (this.invalidCells.size === 0) {
+  checkForSolvability() {
+    if (!this.invalidCells.size) {
       const b = new Board(this.board);
       this._solvable = b.generateSolution(false);
-      if (!this._solvable) {
-        // TODO define a better action for snackbar
-        const snackBarRef = this.snackBar.open('The board is not solvable! Check again after correction', 'Undo last move',
-          {duration: 15000});
-        snackBarRef.onAction().subscribe(() => this.undo());
-      }
+      this.boardSolvableCheck.next([this._solvable, true]);
     } else {
-      const snackBarRef = this.snackBar.open('The board is not correct! First fix invalid cells', 'Clear all invalid cells',
-        {duration: 15000});
-      snackBarRef.onAction().subscribe(() => {
-        while (this.invalidCells.size > 0) {
-          this.selected = this.invalidCells.values().next().value;
-          this.setNumber(emptyCell);
-        }
-      });
+      this.boardSolvableCheck.next([false, false]);
     }
   }
 
   private checkForGameCompletion(): boolean {
-    return this.invalidCells.size === 0 && this._moveCnt === 0 && this._solvable;
-  }
-
-  private gameCompleted() {
-    console.log(`game completed`);
-    const gameCompleted = this.dialog.open(GameCompletedDialogComponent);
-    gameCompleted.afterClosed().subscribe(result => {
-      console.log(`result ${result}`);
-      if (result) {
-        this.newBoard();
-      } else {
-        this.board = null;
-        this.router.navigate(['/home']);
-      }
-    });
+    console.log('check for game completion');
+    const res = this.invalidCells.size === 0 && this._moveCnt === 0 && this._solvable;
+    if (res) {
+      this.gameCompleted.next();
+    }
+    return res;
   }
 
   private setManualHints(num: number) {
@@ -288,6 +281,28 @@ export class BoardService {
       this.selected.manualHints.delete(num);
     } else {
       this.selected.manualHints.add(num);
+    }
+  }
+
+  calculateHint() {
+    const q = [];
+    this.board.forEach(c => {
+      if (c.isEmpty()) {
+        q.push(c);
+      }
+    });
+    q.sort((q1, q2) => q1.compare(q2));
+    this.hintAvailable.next(q.length ? q[0] : null);
+  }
+
+  clearBoard() {
+    this.board = null;
+  }
+
+  clearInvalidCells() {
+    while (this.invalidCells.size > 0) {
+      this.selected = this.invalidCells.values().next().value;
+      this.setNumber(emptyCell);
     }
   }
 }

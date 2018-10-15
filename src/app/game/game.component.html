@@ -84,7 +84,17 @@
           </mat-slide-toggle>
         </div>
 
-        <div class="game-toolbar-button"></div>
+        <div class="game-toolbar-button">
+          <button
+            mat-mini-fab
+            (click)="hint()"
+            color=""
+            matTooltip="Get an hint on the next move"
+            aria-label="Get an hint on the next move"
+          >
+            <mat-icon>card_giftcard</mat-icon>
+          </button>
+        </div>
 
         <div class="game-toolbar-button">
           <button

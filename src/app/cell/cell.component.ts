@@ -1,27 +1,33 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ReadonlyCell} from '../cell';
 import {BoardService} from '../board.service';
 import {HelperService} from '../helper.service';
 import {SettingsService} from '../settings.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-cell',
   templateUrl: './cell.component.html',
   styleUrls: ['./cell.component.scss']
 })
-export class CellComponent implements OnInit {
+export class CellComponent implements OnInit, OnDestroy {
 
   @Input() cell: ReadonlyCell;
   hints: Array<number>;
+  private subscription: Subscription;
 
   constructor(private boardService: BoardService, private helper: HelperService, private settings: SettingsService) {
   }
 
   ngOnInit() {
-    this.boardService.getCell(this.cell).subscribe((c) => {
+    this.subscription = this.boardService.getCell(this.cell).subscribe((c) => {
       // console.log(`${this.cell}: observe change ${c}`);
       this.calcHints();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   private calcHints() {

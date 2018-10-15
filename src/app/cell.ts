@@ -9,9 +9,11 @@ export interface ReadonlyCell {
   readonly valid: boolean;
   readonly modifiable: boolean;
   readonly key: string;
+  readonly k: number;
   manualHints: Set<number>;
 
   isEmpty(): boolean;
+  compare(other: ReadonlyCell): number;
 }
 
 export class Cell implements ReadonlyCell {
@@ -27,7 +29,7 @@ export class Cell implements ReadonlyCell {
     return this._hints;
   }
 
-  compare(other: Cell): number {
+  compare(other: ReadonlyCell): number {
     const h1 = this.hints.size;
     const h2 = other.hints.size;
     let s = Math.sign(h1 - h2);
