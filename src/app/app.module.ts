@@ -5,27 +5,29 @@ import {NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
 import {BoardComponent} from './board/board.component';
 import {CellComponent} from './cell/cell.component';
-import {NavigationComponent} from './navigation/navigation.component';
 import {LayoutModule} from '@angular/cdk/layout';
 import {
   MatBadgeModule,
   MatButtonModule,
-  MatCardModule, MatDialogModule,
+  MatCardModule,
+  MatDialogModule,
   MatGridListModule,
   MatIconModule,
-  MatListModule, MatRadioModule,
+  MatListModule,
+  MatRadioModule,
   MatSidenavModule,
   MatSlideToggleModule,
   MatSnackBarModule,
   MatTableModule,
-  MatToolbarModule, MatTooltipModule
+  MatToolbarModule,
+  MatTooltipModule
 } from '@angular/material';
 import {GameComponent} from './game/game.component';
 import {FormsModule} from '@angular/forms';
-import { GameCompletedDialogComponent } from './game-completed-dialog/game-completed-dialog.component';
-import { HomeComponent } from './home/home.component';
-import { AppRoutingModule } from './app-routing.module';
-import { SettingsComponent } from './settings/settings.component';
+import {GameCompletedDialogComponent} from './game-completed-dialog/game-completed-dialog.component';
+import {HomeComponent} from './home/home.component';
+import {AppRoutingModule} from './app-routing.module';
+import {SettingsComponent} from './settings/settings.component';
 import {OverlayModule} from '@angular/cdk/overlay';
 
 @NgModule({
@@ -33,7 +35,6 @@ import {OverlayModule} from '@angular/cdk/overlay';
     AppComponent,
     BoardComponent,
     CellComponent,
-    NavigationComponent,
     GameComponent,
     GameCompletedDialogComponent,
     HomeComponent,
