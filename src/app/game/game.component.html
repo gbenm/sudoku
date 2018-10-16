@@ -80,6 +80,7 @@
           <mat-slide-toggle
             color="accent"
             [(ngModel)]="buttonMode"
+            [disabled]="buttonModeDisabled()"
             matTooltip="Toggle input mode to insert numbers or hints inside currently selected cell"
             aria-label="Toggle input buttons mode to insert numbers or hints inside currently selected cell"
           >

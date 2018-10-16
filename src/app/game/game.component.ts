@@ -6,6 +6,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {GameCompletedDialogComponent} from '../game-completed-dialog/game-completed-dialog.component';
 import {Subscription} from 'rxjs';
+import {SettingsService} from '../settings.service';
 
 @Component({
   selector: 'app-game',
@@ -18,7 +19,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private subscriptions: Array<Subscription>;
 
   constructor(private boardService: BoardService, private helper: HelperService, private route: ActivatedRoute,
-              private snackBar: MatSnackBar, private dialog: MatDialog, private router: Router) {
+              private snackBar: MatSnackBar, private dialog: MatDialog, private router: Router, private settings: SettingsService) {
   }
 
   ngOnInit() {
@@ -74,7 +75,9 @@ export class GameComponent implements OnInit, OnDestroy {
   buttonClicked(num: number) {
     if (this.boardService.selected) {
       if (this.buttonMode) {
-        this.boardService.setHint(num);
+        if (this.settings.manualHints) {
+          this.boardService.setHint(num);
+        }
       } else if (this.boardService.selected.modifiable) {
         //   console.log(`button set number ${num}`);
         this.boardService.setNumber(num);
@@ -85,6 +88,10 @@ export class GameComponent implements OnInit, OnDestroy {
   // disabled(num: number): boolean {
   //   return !this.boardService.selected || !this.boardService.selected.modifiable || !this.numbersAvailable(num);
   // }
+
+  buttonModeDisabled(): boolean {
+    return !this.settings.manualHints;
+  }
 
   unsetNumberDisabled(): boolean {
     return !this.boardService.selected || this.boardService.selected.isEmpty() || !this.boardService.selected.modifiable || this.buttonMode;
@@ -156,5 +163,4 @@ export class GameComponent implements OnInit, OnDestroy {
       this.snackBar.open('The board is solvable!', 'Got it', {duration: this.helper.snackBarDuration});
     }
   }
-
 }
