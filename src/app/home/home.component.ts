@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {BoardService} from '../board.service';
 import {SettingsService} from '../settings.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -9,7 +10,7 @@ import {SettingsService} from '../settings.service';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private boardService: BoardService, private settings: SettingsService) { }
+  constructor(private boardService: BoardService, private settings: SettingsService, private router: Router) { }
 
   ngOnInit() {
   }
@@ -28,5 +29,10 @@ export class HomeComponent implements OnInit {
 
   gameExists() {
     return this.boardService.boardExists;
+  }
+
+  startNewGame() {
+    this.boardService.newBoard();
+    this.router.navigate(['/game']);
   }
 }

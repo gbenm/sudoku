@@ -22,19 +22,14 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const level = this.route.snapshot.paramMap.get('level');
-    console.log(level);
-    if (level || !this.boardService.boardExists) {
-      this.boardService.newBoard(level);
-      // TODO hack to avoid back from settings to destroy current game
-      if (level) {
-        this.router.navigate(['/game']);
-      }
-    }
+    console.log('game init');
     this.subscriptions = [];
     this.subscriptions.push(this.boardService.getHintAvailable().subscribe(c => this.showHint(c)));
     this.subscriptions.push(this.boardService.getGameCompleted().subscribe(() => this.gameCompleted()));
     this.subscriptions.push(this.boardService.getBoardSolvableCheck().subscribe((res) => this.solvableCheck(res)));
+    if (!this.boardService.boardExists) {
+      this.boardService.newBoard();
+    }
   }
 
   ngOnDestroy(): void {
@@ -118,7 +113,7 @@ export class GameComponent implements OnInit, OnDestroy {
       const num = c.hints.values().next().value;
       const numMsg = c.hints.size > 1 ? `numbers ${c.hints}` : `number ${num}`;
       const snackBarRef = this.snackBar.open(`The ${numMsg} can be set in position (${c.i + 1}, ${c.j + 1})`, 'Set number',
-        {duration: 30000});
+        {duration: this.helper.snackBarDuration});
       snackBarRef.onAction().subscribe(() => {
         console.log(`execute hint ${num}`);
         if (this.boardService.selected !== c) {
@@ -128,7 +123,7 @@ export class GameComponent implements OnInit, OnDestroy {
       });
     } else {
       this.snackBar.open('The board contains some errors. Resolve them first!',
-        'Got it', {duration: 30000});
+        'Got it', {duration: this.helper.snackBarDuration});
     }
   }
 
@@ -149,17 +144,16 @@ export class GameComponent implements OnInit, OnDestroy {
   private solvableCheck(res: [boolean, boolean]) {
     if (!res[1]) {
       const snackBarRef = this.snackBar.open('The board is not correct! Try clearing all invalid cells', 'Clear all invalid cells',
-        {duration: 30000});
+        {duration: this.helper.snackBarDuration});
       snackBarRef.onAction().subscribe(() => {
         this.boardService.clearInvalidCells();
       });
     } else if (!res[0]) {
-      // TODO define a better action for snackbar
       const snackBarRef = this.snackBar.open('The board is not solvable! Check again after correction', 'Undo last move',
-        {duration: 30000});
+        {duration: this.helper.snackBarDuration});
       snackBarRef.onAction().subscribe(() => this.undo());
     } else {
-      const snackBarRef = this.snackBar.open('The board is solvable!', 'Got it', {duration: 30000});
+      this.snackBar.open('The board is solvable!', 'Got it', {duration: this.helper.snackBarDuration});
     }
   }
 

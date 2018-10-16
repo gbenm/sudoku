@@ -2,6 +2,7 @@ import {Component, HostBinding, OnDestroy, OnInit} from '@angular/core';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {SettingsService} from './settings.service';
 import {Subscription} from 'rxjs';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,17 @@ export class AppComponent implements OnInit, OnDestroy {
   @HostBinding('class') componentCssClass;
   private subscription: Subscription;
 
-  constructor(private overlayContainer: OverlayContainer, private settings: SettingsService) {
+  constructor(private overlayContainer: OverlayContainer, private settings: SettingsService, breakpointObserver: BreakpointObserver) {
+    breakpointObserver.observe([
+      Breakpoints.HandsetLandscape,
+      Breakpoints.HandsetPortrait
+    ]).subscribe(result => {
+      if (result.matches) {
+        console.log('handheld');
+        // screenfull.request();
+        // this.activateHandsetLayout();
+      }
+    });
   }
 
   ngOnInit() {

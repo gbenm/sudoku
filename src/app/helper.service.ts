@@ -5,6 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class HelperService {
 
+  snackBarDuration = 30000;
+
   constructor() { }
 
   progr(n: number, start: number = 0): Array<number> {
