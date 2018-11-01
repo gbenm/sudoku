@@ -25,7 +25,7 @@ class Stats {
 export class Board implements ReadonlyBoard {
 
   private static helper: HelperService;
-  private static levels: Array<[number, number, number]> = [[5, 4, 1.6], [50, 3, 1.6], [62, 2, 1.8]];
+  private static levels: Array<[number, number, number]> = [[40, 4, 1.6], [50, 3, 1.6], [62, 2, 1.8]];
 
   private cells: Map<string, Cell>;
   stats: Stats;
