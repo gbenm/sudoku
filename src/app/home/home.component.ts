@@ -10,6 +10,8 @@ import {Router} from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
+  showSpinner = false;
+
   constructor(private boardService: BoardService, private settings: SettingsService, private router: Router) { }
 
   ngOnInit() {
@@ -32,7 +34,10 @@ export class HomeComponent implements OnInit {
   }
 
   startNewGame() {
-    this.boardService.newBoard();
-    this.router.navigate(['/game']);
+    this.showSpinner = true;
+    this.boardService.newBoard().subscribe(b => {
+      this.showSpinner = false;
+      this.router.navigate(['/game']);
+    });
   }
 }

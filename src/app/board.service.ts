@@ -253,8 +253,15 @@ export class BoardService {
   }
 
   newBoard(level = this.settings.level) {
-    this.createNewBoard(level);
-    this.boardObs.next(this.board);
+    let self = this;
+    return new Observable((observer) => {
+      setTimeout(() => {
+        self.createNewBoard(level);
+        self.boardObs.next(self.board);
+        observer.next(self.board);
+      }, 0);
+      return () => {};
+    });
   }
 
   checkForSolvability() {

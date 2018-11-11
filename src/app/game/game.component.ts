@@ -17,6 +17,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   buttonMode: boolean;
   private subscriptions: Array<Subscription>;
+  showSpinner = false;
 
   constructor(private boardService: BoardService, private helper: HelperService, private route: ActivatedRoute,
               private snackBar: MatSnackBar, private dialog: MatDialog, private router: Router, private settings: SettingsService) {
@@ -29,7 +30,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.boardService.getGameCompleted().subscribe(() => this.gameCompleted()));
     this.subscriptions.push(this.boardService.getBoardSolvableCheck().subscribe((res) => this.solvableCheck(res)));
     if (!this.boardService.boardExists) {
-      this.boardService.newBoard();
+      this.newBoard();
     }
   }
 
@@ -37,8 +38,13 @@ export class GameComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
+  private newBoard() {
+    this.showSpinner = true;
+    this.boardService.newBoard().subscribe(b => { this.showSpinner = false; });
+  }
+
   new() {
-    this.boardService.newBoard();
+    this.newBoard();
   }
 
   replay() {
@@ -140,7 +146,7 @@ export class GameComponent implements OnInit, OnDestroy {
     dialog.afterClosed().subscribe(result => {
       console.log(`result ${result}`);
       if (result) {
-        this.boardService.newBoard();
+        this.newBoard();
       } else {
         this.boardService.clearBoard();
         this.router.navigate(['/home']);

@@ -20,7 +20,8 @@ import {
   MatSnackBarModule,
   MatTableModule,
   MatToolbarModule,
-  MatTooltipModule
+  MatTooltipModule,
+  MatProgressSpinnerModule
 } from '@angular/material';
 import {GameComponent} from './game/game.component';
 import {FormsModule} from '@angular/forms';
@@ -46,7 +47,7 @@ import {OverlayModule} from '@angular/cdk/overlay';
   imports: [
     BrowserModule, BrowserAnimationsModule, LayoutModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule,
     MatListModule, MatTableModule, MatGridListModule, MatCardModule, MatBadgeModule, MatSlideToggleModule, FormsModule, MatSnackBarModule,
-    MatDialogModule, MatTooltipModule, OverlayModule, MatRadioModule, AppRoutingModule
+    MatDialogModule, MatTooltipModule, OverlayModule, MatRadioModule, MatProgressSpinnerModule, AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

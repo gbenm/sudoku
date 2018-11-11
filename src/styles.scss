@@ -37,13 +37,26 @@ $pink-bluegrey-theme: mat-dark-theme($pink-bluegrey-primary, $pink-bluegrey-acce
 // Purple - green
 $purple-green-primary: mat-palette($mat-purple, 700, 500, 800);
 $purple-green-accent:  mat-palette($mat-green, A200, A100, A400);
-$purple-green-theme: mat-dark-theme($primary, $accent);
+$purple-green-theme: mat-dark-theme($purple-green-primary, $purple-green-accent);
 .purple-green-theme {
   @include angular-material-theme($purple-green-theme);
   @include cell-theme($purple-green-theme);
 }
 
-
+/* Absolute Center Spinner */
+.loading-indicator {
+  position: fixed;
+  z-index: 999;
+  height: 100%;
+  width: 100%;
+  margin: auto;
+  top: 0;
+  left: 0;
+  background-color: mat-color($secondary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 html, body { height: 100%; }
 body { margin: 0; font-family: 'Roboto', sans-serif; }
