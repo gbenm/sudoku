@@ -149,7 +149,7 @@ export class GameComponent implements OnInit, OnDestroy {
         this.newBoard();
       } else {
         this.boardService.clearBoard();
-        this.router.navigate(['/home']);
+        this.router.navigate(['/']);
       }
     });
   }

@@ -253,7 +253,7 @@ export class BoardService {
   }
 
   newBoard(level = this.settings.level) {
-    let self = this;
+    const self = this;
     return new Observable((observer) => {
       setTimeout(() => {
         self.createNewBoard(level);

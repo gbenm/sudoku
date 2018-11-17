@@ -30,6 +30,8 @@ import {HomeComponent} from './home/home.component';
 import {AppRoutingModule} from './app-routing.module';
 import {SettingsComponent} from './settings/settings.component';
 import {OverlayModule} from '@angular/cdk/overlay';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,8 @@ import {OverlayModule} from '@angular/cdk/overlay';
   imports: [
     BrowserModule, BrowserAnimationsModule, LayoutModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule,
     MatListModule, MatTableModule, MatGridListModule, MatCardModule, MatBadgeModule, MatSlideToggleModule, FormsModule, MatSnackBarModule,
-    MatDialogModule, MatTooltipModule, OverlayModule, MatRadioModule, MatProgressSpinnerModule, AppRoutingModule
+    MatDialogModule, MatTooltipModule, OverlayModule, MatRadioModule, MatProgressSpinnerModule, AppRoutingModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [],
   bootstrap: [AppComponent]
