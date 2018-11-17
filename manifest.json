@@ -6,7 +6,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/sudoku/",
-  "start_url": "/sudoku",
+  "start_url": "/sudoku/",
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",
