@@ -25,4 +25,8 @@ export class HelperService {
     }
   }
 
+  cartesian(a: number[], b: number[]): number[][] {
+    return [].concat(...a.map(d => b.map(e => [].concat(d, e))))
+  }
+
 }

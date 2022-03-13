@@ -1,6 +1,6 @@
 import {Cell, emptyCell, ReadonlyCell} from './cell';
 import {HelperService} from './helper.service';
-import * as assert from 'assert';
+import { ISudokuData, SudokuCreator } from '@algorithm.ts/sudoku';
 
 const squareSize = 3;
 const boardSize = squareSize * 3;
@@ -29,6 +29,7 @@ export class Board implements ReadonlyBoard {
 
   private cells: Map<string, Cell>;
   stats: Stats;
+  sudoku: ISudokuData;
 
   constructor(board?: Board) {
     this.deepCopy(board);
@@ -171,7 +172,7 @@ export class Board implements ReadonlyBoard {
       // console.log(`[${keys.length}] k ${key} hints ${hints}`);
       while (hints.length) {
         const num = hints.shift();
-        assert(this.setNumber(cell, num));
+        this.setNumber(cell, num)
         const res = this.generateSolutionRecursive(keys);
         this.stats.moves++;
         // console.log(`${this._completed} [${keys.length}] ${key} => ${num} hints [${hints}]`);
@@ -211,6 +212,40 @@ export class Board implements ReadonlyBoard {
     const res = this.generateSolutionRecursive(keys);
     console.log(`STATS ${res} ${this.stats}`);
     return res;
+  }
+
+  countEmptyCells(): number {
+    const cells = Array.from(this.cells.values())
+    return cells.map(c => c.num === emptyCell ? 1 : 0 as number).reduce((a, b) => a + b)
+  }
+
+  migrateSolutionFromSodoku() {
+    this.stats = new Stats()
+    this.stats.remaining = this.countEmptyCells()
+  }
+
+  createPuzzle(level = 0) {
+    const levels = [0.2, 0.5, 1.0]
+
+    const creator = new SudokuCreator({
+      childMatrixSize: 3
+    })
+
+    this.sudoku = creator.createSudoku(levels[level])
+
+    const from0to8 = new Array(9).fill(0).map((_, i) => i)
+    const cells = Board.helper.cartesian(from0to8, from0to8)
+
+    cells.forEach((rawCell) => {
+      const cell = this.getCell(rawCell[0], rawCell[1])
+      const value = this.sudoku.puzzle[cell.i][cell.j] + 1
+
+      if (value === 0) {
+        cell.modifiable = true
+      }
+
+      this.setNumber(cell, value)
+    })
   }
 
   prepareBoardForGameplay(level: number = 0) {

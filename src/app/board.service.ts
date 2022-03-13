@@ -43,8 +43,8 @@ export class BoardService {
     console.log(`create board level ${level}`);
     this._level = level;
     this.board = new Board();
-    this.board.generateSolution(true);
-    this.board.prepareBoardForGameplay(levels[this._level]);
+    this.board.createPuzzle(levels[this._level]);
+    this.board.migrateSolutionFromSodoku();
     this.history = [];
     this.historyPos = 0;
     this._selected = null;
@@ -77,6 +77,7 @@ export class BoardService {
   }
 
   get boardSize(): number {
+    if (!this.board) return 0
     return this.board.size;
   }
 
@@ -229,6 +230,7 @@ export class BoardService {
   }
 
   isRedoAvailable(): boolean {
+    if (!this.history) return false;
     return this.history.length && this.historyPos < this.history.length;
   }
 
