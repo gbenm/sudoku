@@ -6,7 +6,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 })
 export class SettingsService {
 
-  manualHints = false;
+  manualHints = true;
   level = 'easy';
   _theme = 'theme';
   private themeObs: BehaviorSubject<string>;
