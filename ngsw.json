@@ -1,0 +1,79 @@
+{
+  "configVersion": 1,
+  "timestamp": 1647209261652,
+  "index": "/sudoku/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/sudoku/favicon.ico",
+        "/sudoku/index.html",
+        "/sudoku/main.38d20017d35d95b8.js",
+        "/sudoku/polyfills.13581ae0438814ad.js",
+        "/sudoku/runtime.01a17dc52fadd531.js",
+        "/sudoku/styles.76ae2a780504a3a8.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/sudoku/assets/icons/icon-128x128.png",
+        "/sudoku/assets/icons/icon-144x144.png",
+        "/sudoku/assets/icons/icon-152x152.png",
+        "/sudoku/assets/icons/icon-192x192.png",
+        "/sudoku/assets/icons/icon-384x384.png",
+        "/sudoku/assets/icons/icon-512x512.png",
+        "/sudoku/assets/icons/icon-72x72.png",
+        "/sudoku/assets/icons/icon-96x96.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "/sudoku/assets/icons/icon-128x128.png": "1044d208f8de2cc588e1e45a5f1089a59647739a",
+    "/sudoku/assets/icons/icon-144x144.png": "8ec861c6292e961811179b09dc902c157de4b66b",
+    "/sudoku/assets/icons/icon-152x152.png": "dce83e2fa97fee532733f7e7a32abe3dc00fd7f2",
+    "/sudoku/assets/icons/icon-192x192.png": "5403eac50ef544c2dafd6bffea7bbf33aed0b900",
+    "/sudoku/assets/icons/icon-384x384.png": "7dd1bf94c1e144127ac8ccd98900845766895413",
+    "/sudoku/assets/icons/icon-512x512.png": "02a5c751eef8339004ab15ece27f5f1f30d45ee2",
+    "/sudoku/assets/icons/icon-72x72.png": "039bad1731a8ffc36d03dc378a64fbbd6466f2c4",
+    "/sudoku/assets/icons/icon-96x96.png": "8c7003555e7f43af5fb10bd1d155804f2f022c86",
+    "/sudoku/favicon.ico": "adb450f5ed25356c2e1346043fea5b552e559312",
+    "/sudoku/index.html": "3d6850b21bf87692abbc551b455c170680a1d954",
+    "/sudoku/main.38d20017d35d95b8.js": "1cc8e193daad6440f05957ed4ef31a63d681f6e4",
+    "/sudoku/polyfills.13581ae0438814ad.js": "9ed96bbe6dcdd379eaad96c8955ce95838396f39",
+    "/sudoku/runtime.01a17dc52fadd531.js": "6d47bf8e6e53adc5970f1da3e5adfd36179a5863",
+    "/sudoku/styles.76ae2a780504a3a8.css": "a196b660019639226740f68e052dc1fc27e3e815"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
