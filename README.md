@@ -1,6 +1,25 @@
 # Sudoku
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.4.
+> Este proyecto es originalmente propiedad de *Sergio Moretti*,
+>  por lo que la razón de que no tenga una licencia es que la
+>  fuente de origen tampoco la tiene, si necesita utilizar
+>  este repositorio puede pedir al autor original que agregue
+>  una licencia y luego abrir un issue acá para que se
+>  agregue también, de lo contrario uselo bajo su propia
+> responsabilidad.
+
+## Razones de este Fork
+- Se ha reemplazado el algoritmo de generación de sudokus, para que los que se generen estén bien definidos
+- Se ha actualizado el proyecto a Angular 13
+- Se ha reparado el contandor de movimientos para marcar como Juego terminado (créditos a [CesarELU](https://github.com/CesarELU))
+- Se agregaron paquetes de desarrollo
+- El proyecto puede correr sin tener paquetes globales
+
+> Recuerde que se usa angular 13, además el proyecto
+> sigue teniendo compatibilidad con **PWA** por lo que puede
+> instarlo como aplicación si lo desea, puede
+> encontrar el link en el apartado de **About** de
+> este repositorio
 
 ## Development server
 
