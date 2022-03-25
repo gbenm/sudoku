@@ -129,12 +129,12 @@ export class BoardService {
 
   setNumber(num: number, skipHistory = false) {
     if (this.selected && num !== this.selected.num) {
+      this._moveCnt += emptyCell !== this.selected.num ? num !== emptyCell? 0 : 1 : -1;
       this.pushMoveInHistory(['N', this.selected, this.selected.num, num], skipHistory);
       this.updateNumbers(num);
       const valid = this.board.setNum(this.selected, num);
       this.updateInvalidCells(valid);
       this.updateManualHints(num);
-      this._moveCnt += num !== emptyCell ? -1 : 1;
       console.log(`set number ${this.selected} ${num} ${this._moveCnt}`);
       // hack to force highlights update
       const sel = this._selected;
